@@ -1,5 +1,4 @@
-require "confidential_info_redactor_lite/version"
-
-module ConfidentialInfoRedactorLite
-  # Your code goes here...
-end
+require 'confidential_info_redactor_lite/version'
+require 'confidential_info_redactor_lite/extractor'
+require 'confidential_info_redactor_lite/redactor'
+require 'pragmatic_segmenter'
