@@ -26,6 +26,7 @@ module ConfidentialInfoRedactorLite
     end
 
     def replace
+      return string unless dow.kind_of?(Array) && dow_abbr.kind_of?(Array) && months.kind_of?(Array) && months_abbr.kind_of?(Array)
       new_string = string.dup
       counter = 0
       dow_abbr.each do |day|

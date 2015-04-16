@@ -27,6 +27,21 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = 'The scavenger hunt ends on Dec. 31st, 2011.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('The scavenger hunt ends on <redacted date>.')
     end
+
+    it 'handles nil date objects' do
+      text = 'The scavenger hunt ends on Dec. 31st, 2011.'
+      expect(described_class.new(text: text, language: 'en', dow: nil, dow_abbr: nil, months: nil, months_abbr: nil).dates).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
+    end
+
+    it 'handles empty string date objects' do
+      text = 'The scavenger hunt ends on Dec. 31st, 2011.'
+      expect(described_class.new(text: text, language: 'en', dow: '', dow_abbr: '', months: '', months_abbr: '').dates).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
+    end
+
+    it 'handles empty array date objects' do
+      text = 'The scavenger hunt ends on Dec. 31st, 2011.'
+      expect(described_class.new(text: text, language: 'en', dow: [], dow_abbr: [], months: [], months_abbr: []).dates).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
+    end
   end
 
   describe '#numbers' do
