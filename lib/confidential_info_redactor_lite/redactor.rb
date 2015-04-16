@@ -8,8 +8,8 @@ module ConfidentialInfoRedactorLite
     NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.)*\d)*(\D?\s|\s|\.?\s|\.$)|(?<=\s|\s\()[^(]?\d+((,|\.)*\d)*(?=(\D?\s|\s|\.?\s|\.$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)/
     EMAIL_REGEX = /(?<=\A|\s)[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+(?=\z|\s|\.)/i
 
-    attr_reader :text, :language, :number_text, :date_text, :token_text, :tokens, :ignore_emails, :ignore_dates, :ignore_numbers, :ignore_hyperlinks
-    def initialize(text:, **args)
+    attr_reader :text, :language, :number_text, :date_text, :token_text, :tokens, :ignore_emails, :ignore_dates, :ignore_numbers, :ignore_hyperlinks, :dow, :dow_abbr, :months, :months_abbr
+    def initialize(text:, dow:, dow_abbr:, months:, months_abbr:, **args)
       @text = text
       @language = args[:language] || 'en'
       @tokens = args[:tokens]
@@ -20,6 +20,10 @@ module ConfidentialInfoRedactorLite
       @ignore_dates = args[:ignore_dates]
       @ignore_numbers = args[:ignore_numbers]
       @ignore_hyperlinks = args[:ignore_hyperlinks]
+      @dow = dow
+      @dow_abbr = dow_abbr
+      @months = months
+      @months_abbr = months_abbr
     end
 
     def dates
@@ -61,7 +65,7 @@ module ConfidentialInfoRedactorLite
     end
 
     def redact_dates(txt)
-      ConfidentialInfoRedactorLite::Date.new(string: txt, language: language).replace.gsub(/<redacted date>/, "#{date_text}").gsub(/\s*#{Regexp.escape(date_text)}\s*/, " #{date_text} ").gsub(/\A\s*#{Regexp.escape(date_text)}\s*/, "#{date_text} ").gsub(/#{Regexp.escape(date_text)}\s{1}\.{1}/, "#{date_text}.")
+      ConfidentialInfoRedactorLite::Date.new(string: txt, dow: dow, dow_abbr: dow_abbr, months: months, months_abbr: months_abbr).replace.gsub(/<redacted date>/, "#{date_text}").gsub(/\s*#{Regexp.escape(date_text)}\s*/, " #{date_text} ").gsub(/\A\s*#{Regexp.escape(date_text)}\s*/, "#{date_text} ").gsub(/#{Regexp.escape(date_text)}\s{1}\.{1}/, "#{date_text}.")
     end
 
     def redact_numbers(txt)
