@@ -54,7 +54,7 @@ ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en
 # => 'Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
 
 ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers
-# => 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for <redacted number>. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
+# => 'Coca-Cola announced a merger with Pepsi that will happen on December <redacted number>, <redacted number> for <redacted number>. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
 
 ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).emails
 # => 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at <redacted> or visit http://www.super-fake-merger.com.'
