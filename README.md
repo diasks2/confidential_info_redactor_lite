@@ -42,42 +42,37 @@ corpus = ['array', 'of', 'common', 'english', 'words']
 tokens = ConfidentialInfoRedactorLite::Extractor.new(text: text, corpus: corpus).extract
 # => ["Coca-Cola", "Pepsi", "John Smith"]
 
-ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens).redact
+en_dow = %w(monday tuesday wednesday thursday friday saturday sunday) 
+en_dow_abbr = %w(mon tu tue tues wed th thu thur thurs fri sat sun) 
+en_months = %w(january february march april may june july august september october november december) 
+en_month_abbr = %w(jan feb mar apr jun jul aug sep sept oct nov dec) 
+ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact
 # => '<redacted> announced a merger with <redacted> that will happen on <redacted date> for <redacted number>. Please contact <redacted> at <redacted> or visit <redacted>.'
 
 # You can also just use a specific redactor
-ConfidentialInfoRedactorLite::Redactor.new(text: text).dates
+ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates
 # => 'Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
 
-ConfidentialInfoRedactorLite::Redactor.new(text: text).numbers
+ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers
 # => 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for <redacted number>. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
 
-ConfidentialInfoRedactorLite::Redactor.new(text: text).emails
+ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).emails
 # => 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at <redacted> or visit http://www.super-fake-merger.com.'
 
-ConfidentialInfoRedactorLite::Redactor.new(text: text).hyperlinks
+ConfidentialInfoRedactorLite::Redactor.new(text: text, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks
 # => 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit <redacted>.'
 
-ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens).proper_nouns
+ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).proper_nouns
 # => '<redacted> announced a merger with <redacted> that will happen on December 15th, 2020 for $200,000,000,000. Please contact <redacted> at j.smith@example.com or visit http://www.super-fake-merger.com.'
 
 # It is possible to 'turn off' any of the specific redactors
-ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens, ignore_numbers: true).redact
+ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens, ignore_numbers: true, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact
 # => '<redacted> announced a merger with <redacted> that will happen on <redacted date> for $200,000,000,000. Please contact <redacted> at <redacted> or visit <redacted>.'
-
-# German Example
-text = 'Viele Mitarbeiter der Deutschen Bank suchen eine andere Arbeitsstelle.'
-corpus = ['array', 'of', 'common', 'german', 'words']
-tokens = ConfidentialInfoRedactorLite::Extractor.new(text: text, corpus: corpus, language: 'de').extract
-# => ['Deutschen Bank']
-
-ConfidentialInfoRedactorLite::Redactor.new(text: text, language: 'de', tokens: tokens).redact
-# => 'Viele Mitarbeiter der <redacted> suchen eine andere Arbeitsstelle.'
 
 # It is also possible to change the redaction text
 text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
 tokens = ['Coca-Cola', 'Pepsi', 'John Smith']
-ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****').redact
+ConfidentialInfoRedactorLite::Redactor.new(text: text, tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact
 # => '***** announced a merger with ***** that will happen on ^^redacted date^^ for **redacted number**. Please contact ***** at ***** or visit *****.'
 ```
 
