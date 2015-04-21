@@ -31,16 +31,32 @@ module ConfidentialInfoRedactorLite
       redact_dates(text)
     end
 
+    def dates_html
+      redact_dates_html(text)
+    end
+
     def numbers
       redact_numbers(text)
+    end
+
+    def numbers_html
+      redact_numbers_html(text)
     end
 
     def emails
       redact_emails(text)
     end
 
+    def emails_html
+      redact_emails_html(text)
+    end
+
     def hyperlinks
       redact_hyperlinks(text)
+    end
+
+    def hyperlinks_html
+      redact_hyperlinks_html(text)
     end
 
     def proper_nouns
@@ -59,7 +75,84 @@ module ConfidentialInfoRedactorLite
       redact_tokens(redacted_text)
     end
 
+    def redact_html
+      redacted_text = redact_dates_html(text)[0]
+      redacted_text = redact_emails_html(redacted_text)[0]
+      redacted_text = redact_hyperlinks_html(redacted_text)[0]
+      redact_numbers_html(redacted_text)[0]
+    end
+
     private
+
+    def redact_hyperlinks_html(txt)
+      redacted_text = redact_hyperlinks(txt).gsub(/\>\s#{Regexp.escape(token_text)}\s\</, ">#{token_text}<").gsub(/\>\s#{Regexp.escape(number_text)}\s\</, ">#{number_text}<").gsub(/\>\s#{Regexp.escape(date_text)}\s\</, ">#{date_text}<")
+      original_sentence_array = txt.split(' ')
+      redacted_sentence_array = redacted_text.split(' ')
+      diff = original_sentence_array - redacted_sentence_array
+      final_hyperlinks_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+      [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(token_text)}/, "<span class='confidentialHyperlinks'>#{token_text}</span>"), final_hyperlinks_tokens]
+    end
+
+    def redact_numbers_html(txt)
+      redacted_text = redact_numbers(txt).gsub(/\>\s#{Regexp.escape(token_text)}\s\</, ">#{token_text}<").gsub(/\>\s#{Regexp.escape(number_text)}\s\</, ">#{number_text}<").gsub(/\>\s#{Regexp.escape(date_text)}\s\</, ">#{date_text}<")
+      original_sentence_array = txt.split(' ')
+      redacted_sentence_array = redacted_text.split(' ')
+      diff = original_sentence_array - redacted_sentence_array
+      final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }
+      [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(number_text)}/, "<span class='confidentialNumber'>#{number_text}</span>"), final_number_tokens]
+    end
+
+    def redact_emails_html(txt)
+      redacted_text = redact_emails(txt).gsub(/\>\s#{Regexp.escape(token_text)}\s\</, ">#{token_text}<").gsub(/\>\s#{Regexp.escape(number_text)}\s\</, ">#{number_text}<").gsub(/\>\s#{Regexp.escape(date_text)}\s\</, ">#{date_text}<")
+      original_sentence_array = txt.split(' ')
+      redacted_sentence_array = redacted_text.split(' ')
+      diff = original_sentence_array - redacted_sentence_array
+      final_email_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+      [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(token_text)}/, "<span class='confidentialEmail'>#{token_text}</span>"), final_email_tokens]
+    end
+
+    def redact_dates_html(txt)
+      redacted_text = redact_dates(txt)
+      original_sentence_array = txt.split(' ')
+      redacted_sentence_array = redacted_text.split(' ')
+      diff = original_sentence_array - redacted_sentence_array
+      date_tokens = []
+      redacted_text.split(' ').each_with_index do |redacted_token, index|
+        if redacted_token.gsub(/\./, '') == date_text
+          original_sentence_array.each_with_index do |original_token, i|
+            if redacted_sentence_array[index - 1] == original_token &&
+              diff.include?(original_sentence_array[i + 1]) &&
+              original_sentence_array[i + 2] == redacted_sentence_array[index + 1]
+              date_tokens << original_sentence_array[i + 1]
+            end
+            if redacted_sentence_array[index - 1] == original_token &&
+              diff.include?(original_sentence_array[i + 1]) &&
+              diff.include?(original_sentence_array[i + 2]) &&
+              original_sentence_array[i + 3] == redacted_sentence_array[index + 1]
+              date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2]
+            end
+            if redacted_sentence_array[index - 1] == original_token &&
+              diff.include?(original_sentence_array[i + 1]) &&
+              diff.include?(original_sentence_array[i + 2]) &&
+              diff.include?(original_sentence_array[i + 3]) &&
+              original_sentence_array[i + 4] == redacted_sentence_array[index + 1]
+              date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2] + ' ' + original_sentence_array[i + 3]
+            end
+            if redacted_sentence_array[index - 1] == original_token &&
+              diff.include?(original_sentence_array[i + 1]) &&
+              diff.include?(original_sentence_array[i + 2]) &&
+              diff.include?(original_sentence_array[i + 3]) &&
+              diff.include?(original_sentence_array[i + 4]) &&
+              original_sentence_array[i + 5] == redacted_sentence_array[index + 1]
+              date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2] + ' ' + original_sentence_array[i + 3] + ' ' + original_sentence_array[i + 4]
+            end
+          end
+        end
+      end
+
+      final_date_tokens = date_tokens.map { |token| token[-1].eql?('.') ? token[0...-1] : token }
+      [redacted_text.gsub(/#{Regexp.escape(date_text)}/, "<span class='confidentialDate'>#{date_text}</span>"), final_date_tokens]
+    end
 
     def redact_hyperlinks(txt)
       ConfidentialInfoRedactorLite::Hyperlink.new(string: txt).replace.gsub(/<redacted>/, "#{token_text}").gsub(/\s*#{Regexp.escape(token_text)}\s*/, " #{token_text} ").gsub(/#{Regexp.escape(token_text)}\s{1}\.{1}/, "#{token_text}.").gsub(/#{Regexp.escape(token_text)}\s{1}\,{1}/, "#{token_text},")

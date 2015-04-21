@@ -44,6 +44,13 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     end
   end
 
+  describe '#dates_html' do
+    it 'surrounds the redacted dates in spans and return the redacted dates from a text #001' do
+      text = 'On May 1st, 2000 Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020.'
+      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq(["On <span class='confidentialDate'>*****</span> Coca-Cola announced a merger with Pepsi that will happen on <span class='confidentialDate'>*****</span>.", ['May 1st, 2000', 'December 15th, 2020']])
+    end
+  end
+
   describe '#numbers' do
     it 'redacts numbers from a text #001' do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000.'
@@ -61,6 +68,13 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     end
   end
 
+  describe '#numbers_html' do
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #001' do
+      text = 'It was his 1st time, not yet his 10th, not even his 2nd. The wood was 3/4" thick. It cost $200,000.'
+      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["It was his <span class='confidentialNumber'>*****</span> time, not yet his <span class='confidentialNumber'>*****</span>, not even his <span class='confidentialNumber'>*****</span>. The wood was <span class='confidentialNumber'>*****</span> thick. It cost <span class='confidentialNumber'>*****</span>.", ["1st", "10th,", "2nd", "3/4\"", "$200,000"]])
+    end
+  end
+
   describe '#emails' do
     it 'redacts email addresses from a text #001' do
       text = 'His email is john@gmail.com or you can try k.light@tuv.eu.us.'
@@ -73,10 +87,24 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     end
   end
 
+  describe '#emails_html' do
+    it 'surrounds the redacted emails in spans and return the redacted emails from a text #001' do
+      text = 'His email is (john@gmail.com) or you can try (k.light@tuv.eu.us).'
+      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, token_text: "*****").emails_html).to eq(["His email is (<span class='confidentialEmail'>*****</span>) or you can try (<span class='confidentialEmail'>*****</span>).", ["john@gmail.com", "k.light@tuv.eu.us"]])
+    end
+  end
+
   describe '#hyperlinks' do
     it 'redacts hyperlinks from a text #001' do
       text = 'Visit https://www.tm-town.com for more info.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks).to eq('Visit <redacted> for more info.')
+    end
+  end
+
+  describe '#hyperlinks_html' do
+    it 'surrounds the redacted hyperlinks in spans and return the redacted hyperlinks from a text #001' do
+      text = 'Visit https://www.tm-town.com for more info or https://www.google.com.'
+      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, token_text: "*****").hyperlinks_html).to eq(["Visit <span class='confidentialHyperlinks'>*****</span> for more info or <span class='confidentialHyperlinks'>*****</span>.", ["https://www.tm-town.com", "https://www.google.com"]])
     end
   end
 
@@ -179,6 +207,14 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       tokens = ['Coca-Cola', 'Pepsi', 'John Smith']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
       expect(described_class.new(text: text, language: 'en', tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('***** announced a merger with ***** that will happen on ^^redacted date^^ for **redacted number**. Please contact ***** at ***** or visit *****.')
+    end
+  end
+
+  describe '#redact_html' do
+    it 'redacts all confidential information from a text #001' do
+      tokens = ['Coca-Cola', 'Pepsi']
+      text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000. Find out more at https://www.merger.com or contact john@merger.com.'
+      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: '*****', date_text: '*****', token_text: '*****').redact_html).to eq("Coca-Cola announced a merger with Pepsi that will happen on on <span class='confidentialDate'>*****</span> for <span class='confidentialNumber'>*****</span>. Find out more at <span class='confidentialHyperlinks'>*****</span> or contact <span class='confidentialEmail'>*****</span>.")
     end
   end
 end
