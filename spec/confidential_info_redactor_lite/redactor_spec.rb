@@ -70,8 +70,8 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
 
   describe '#numbers_html' do
     it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #001' do
-      text = 'It was his 1st time, not yet his 10th, not even his 2nd. The wood was 3/4" thick. It cost $200,000.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["It was his <span class='confidentialNumber'>*****</span> time, not yet his <span class='confidentialNumber'>*****</span>, not even his <span class='confidentialNumber'>*****</span>. The wood was <span class='confidentialNumber'>*****</span> thick. It cost <span class='confidentialNumber'>*****</span>.", ["1st", "10th,", "2nd", "3/4\"", "$200,000"]])
+      text = 'It was his 1st) time, not yet his 10th, not even his 2nd. The wood was 3/4" thick. It cost $200,000.'
+      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["It was his <span class='confidentialNumber'>*****</span>) time, not yet his <span class='confidentialNumber'>*****</span>, not even his <span class='confidentialNumber'>*****</span>. The wood was <span class='confidentialNumber'>*****</span> thick. It cost <span class='confidentialNumber'>*****</span>.", ["1st", "10th,", "2nd", "3/4\"", "$200,000"]])
     end
   end
 

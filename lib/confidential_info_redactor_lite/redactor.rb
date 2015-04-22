@@ -98,7 +98,7 @@ module ConfidentialInfoRedactorLite
       original_sentence_array = txt.split(' ')
       redacted_sentence_array = redacted_text.split(' ')
       diff = original_sentence_array - redacted_sentence_array
-      final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }
+      final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
       [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(number_text)}/, "<span class='confidentialNumber'>#{number_text}</span>"), final_number_tokens]
     end
 
