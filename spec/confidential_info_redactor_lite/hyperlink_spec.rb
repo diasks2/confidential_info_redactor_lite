@@ -49,7 +49,7 @@ RSpec.describe ConfidentialInfoRedactorLite::Hyperlink do
     it 'replaces the hyperlinks in a string with regular tokens #001' do
       string = "Today the date is: Jan 1. Visit https://www.example.com/hello or http://www.google.co.uk"
       ws = described_class.new(string: string)
-      expect(ws.replace).to eq("Today the date is: Jan 1. Visit  <redacted>  or  <redacted> ")
+      expect(ws.replace).to eq("Today the date is: Jan 1. Visit  <redacted hyperlink>  or  <redacted hyperlink> ")
     end
 
     it 'replaces the hyperlinks in a string with regular tokens #002' do
