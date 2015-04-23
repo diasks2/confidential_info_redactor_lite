@@ -232,5 +232,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000. Find out more at https://www.merger.com or contact john@merger.com.'
       expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact).to eq("***** announced a merger with ***** that will happen on on **date** for **number**. Find out more at **url** or contact **email**.")
     end
+
+    it 'redacts all confidential information from a text #002' do
+      tokens = ['CLA']
+      text = 'LEGAL DISCLAIMER - CLA will not be held reponsible for changes.'
+      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact).to eq("LEGAL DISCLAIMER - ***** will not be held reponsible for changes.")
+    end
   end
 end
