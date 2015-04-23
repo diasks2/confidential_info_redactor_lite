@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe ConfidentialInfoRedactorLite::Extractor do
-  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'viele', 'mitarbeiter', 'arbeitsstelle', 'some', 'there', 'king', 'by', "don't", 'dec', 'at', 'dot', 'and', 'project', 'activity', 'complete', 'prizes', 'build', 'video', 'many', 'autographs', 'picture', 'the', 'each', 'submit', 'to', 'then', 'coming', 'screenshot'] }
+  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'viele', 'mitarbeiter', 'arbeitsstelle', 'some', 'there', 'king', 'by', "don't", 'dec', 'at', 'dot', 'and', 'project', 'activity', 'complete', 'prizes', 'build', 'video', 'many', 'autographs', 'picture', 'the', 'each', 'submit', 'to', 'then', 'coming', 'screenshot', 'putter', 'king', 'miniature', 'good', 'bad', 'vs.', 'carbs', 'all', 'natural', 'peanut', 'butter', 'world', 'heritage', 'site', 'gift', 'card', 'engraved', 'crystal', 'trophy'] }
   describe '#extract' do
     context 'English (en)' do
       it 'extracts the proper nouns from a text #001' do
@@ -87,7 +87,7 @@ RSpec.describe ConfidentialInfoRedactorLite::Extractor do
 
           Don’t forget to use your imagination and creativity!
         EOF
-        expect(described_class.new(text: text, corpus: corpus).extract).to eq(["Putter King Miniature Golf Scavenger Hunt", "Putter King", "Annual Miniature Golf Scavenger Hunt", "The Official List", "Nostalgic Miniature Golf Obstacles", "Putter King Hole Design Contest", "World Heritage Site", "PGA", "iTunes", "Gift Card", "Putter King Scavenger Hunt Trophy", "Engraved Crystal Trophy", "Picture Coming Soon", "The Putter King", "The U.S. Government", "Putter King Scavenger Hunt Submission", "YouTube", "Flickr", "Picasa", "Photobucket"])
+        expect(described_class.new(text: text, corpus: corpus).extract).to eq(["PGA", "iTunes", "YouTube", "Flickr", "Picasa", "Photobucket"])
       end
 
       it 'extracts the proper nouns from a text #007' do
@@ -103,6 +103,21 @@ RSpec.describe ConfidentialInfoRedactorLite::Extractor do
       it 'extracts the proper nouns from a text #009' do
         text = 'Then Peter went to the store.'
         expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq(["Peter"])
+      end
+
+      it 'extracts the proper nouns from a text #010' do
+        text = 'HOW TO COOK VEGETABLES'
+        expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
+      end
+
+      it 'extracts the proper nouns from a text #011' do
+        text = 'All Natural Peanut Butter'
+        expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
+      end
+
+      it 'extracts the proper nouns from a text #012' do
+        text = 'GOOD CARBS VS. BAD CARBS'
+        expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
       end
     end
 
