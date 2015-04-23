@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe ConfidentialInfoRedactorLite::Extractor do
-  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'viele', 'mitarbeiter', 'arbeitsstelle', 'some', 'there', 'king', 'by', "don't", 'dec', 'at', 'dot', 'and', 'project', 'activity', 'complete', 'prizes', 'build', 'video', 'many', 'autographs', 'picture', 'the', 'each', 'submit', 'to', 'then', 'coming', 'screenshot', 'putter', 'king', 'miniature', 'good', 'bad', 'vs.', 'carbs', 'all', 'natural', 'peanut', 'butter', 'world', 'heritage', 'site', 'gift', 'card', 'engraved', 'crystal', 'trophy'] }
+  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'viele', 'mitarbeiter', 'arbeitsstelle', 'some', 'there', 'king', 'by', "don't", 'dec', 'at', 'dot', 'and', 'project', 'activity', 'complete', 'prizes', 'build', 'video', 'many', 'autographs', 'picture', 'the', 'each', 'submit', 'to', 'then', 'coming', 'screenshot', 'putter', 'king', 'miniature', 'good', 'bad', 'vs.', 'carbs', 'all', 'natural', 'peanut', 'butter', 'world', 'heritage', 'site', 'gift', 'card', 'engraved', 'crystal', 'trophy', 'reducing'] }
   describe '#extract' do
     context 'English (en)' do
       it 'extracts the proper nouns from a text #001' do
@@ -117,6 +117,21 @@ RSpec.describe ConfidentialInfoRedactorLite::Extractor do
 
       it 'extracts the proper nouns from a text #012' do
         text = 'GOOD CARBS VS. BAD CARBS'
+        expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
+      end
+
+      it 'extracts the proper nouns from a text #013' do
+        text = 'Reducing”'
+        expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
+      end
+
+      it 'extracts the proper nouns from a text #014' do
+        text = '”'
+        expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
+      end
+
+      it 'extracts the proper nouns from a text #015' do
+        text = '“Reducing'
         expect(described_class.new(text: text, corpus: corpus, language: 'en').extract).to eq([])
       end
     end
