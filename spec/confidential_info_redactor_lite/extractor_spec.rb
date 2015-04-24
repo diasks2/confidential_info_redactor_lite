@@ -142,8 +142,13 @@ RSpec.describe ConfidentialInfoRedactorLite::Extractor do
         expect(described_class.new(text: text, corpus: corpus, language: 'de').extract).to eq(['Deutschen Bank'])
       end
 
-      it 'extracts the proper nouns from a text #001' do
+      it 'extracts the proper nouns from a text #002' do
         text = 'Viele Mitarbeiter der Deutsche Bank suchen eine andere Arbeitsstelle.'
+        expect(described_class.new(text: text, corpus: corpus, language: 'de').extract).to eq(['Deutsche Bank'])
+      end
+
+      it 'extracts the proper nouns from a text #003' do
+        text = 'Viele de Mitarbeiters der Deutsche Bank suchen eine andere Arbeitsstelle.'
         expect(described_class.new(text: text, corpus: corpus, language: 'de').extract).to eq(['Deutsche Bank'])
       end
     end
