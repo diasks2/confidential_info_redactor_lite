@@ -270,6 +270,12 @@ RSpec.describe ConfidentialInfoRedactorLite::Date do
         ws = ConfidentialInfoRedactorLite::Date.new(string: string, dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr)
         expect(ws.replace).to eq(' <redacted date> ')
       end
+
+      it 'replaces the date occurences in a string #002' do
+        string = 'Oktober de 15'
+        ws = ConfidentialInfoRedactorLite::Date.new(string: string, dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr)
+        expect(ws.replace).to eq(' <redacted date> ')
+      end
     end
   end
 
