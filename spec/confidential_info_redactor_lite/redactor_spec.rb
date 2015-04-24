@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe ConfidentialInfoRedactorLite::Redactor do
-  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please'] }
+  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'prizes'] }
   let(:en_dow) { %w(monday tuesday wednesday thursday friday saturday sunday) }
   let(:en_dow_abbr) { %w(mon tu tue tues wed th thu thur thurs fri sat sun) }
   let(:en_months) { %w(january february march april may june july august september october november december) }
