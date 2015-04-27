@@ -12,6 +12,10 @@ module ConfidentialInfoRedactorLite
     # Rubular: http://rubular.com/r/mpVSeaKwdY
     DIGIT_ONLY_YEAR_LAST_REGEX = /\d{4}[12]\d{3}\D/
 
+    JA_DATE_REGEX_LONG = /[０１２３４５６７８９]+年[０１２３４５６７８９]+月[０１２３４５６７８９]+日/
+
+    JA_DATE_REGEX_SHORT = /[０１２３４５６７８９]+月[０１２３４５６７８９]+日/
+
     attr_reader :string, :dow, :dow_abbr, :months, :months_abbr
     def initialize(string:, dow:, dow_abbr:, months:, months_abbr:)
       @string = string
@@ -32,6 +36,8 @@ module ConfidentialInfoRedactorLite
       dow_abbr.each do |day|
         counter +=1 if string.include?('day')
       end
+      new_string = new_string.gsub(JA_DATE_REGEX_LONG, '<redacted date>')
+      new_string = new_string.gsub(JA_DATE_REGEX_SHORT, '<redacted date>')
       if counter > 0
         dow_abbr.each do |day|
           months.each do |month|

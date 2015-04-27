@@ -11,6 +11,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Date do
   let(:de_months) { %w(januar februar märz april mai juni juli august september oktober november dezember) }
   let(:de_month_abbr) { %w(jan jän feb märz apr mai juni juli aug sep sept okt nov dez) }
 
+  let(:ja_dow) { %w(月曜日 火曜日 水曜日 木曜日 金曜日 土曜日 日曜日) }
+  let(:ja_dow_abbr) { %w(月 火 水 木 金 土 日) }
+  let(:ja_months) { %w(１月 ２月 ３月 ４月 ５月 ６月 ７月 ８月 ９月 １０月 １１月 １２月 1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月) }
+  let(:ja_month_abbr) { %w(１月 ２月 ３月 ４月 ５月 ６月 ７月 ８月 ９月 １０月 １１月 １２月 1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月) }
+
   context '#includes_date?' do
     it 'returns true if the string includes a date #001' do
       string = 'Today is Monday, April 4th, 2011, aka 04/04/2011.'
@@ -275,6 +280,14 @@ RSpec.describe ConfidentialInfoRedactorLite::Date do
         string = 'Oktober de 15'
         ws = ConfidentialInfoRedactorLite::Date.new(string: string, dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr)
         expect(ws.replace).to eq(' <redacted date> ')
+      end
+    end
+
+    context 'Japanese (ja)' do
+      it 'replaces the date occurences in a string #001' do
+        string = '２０１１年１２月３１日です。'
+        ws = ConfidentialInfoRedactorLite::Date.new(string: string, dow: ja_dow, dow_abbr: ja_dow_abbr, months: ja_months, months_abbr: ja_month_abbr)
+        expect(ws.replace).to eq('<redacted date>です。')
       end
     end
   end
