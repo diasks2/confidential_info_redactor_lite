@@ -88,10 +88,14 @@ module ConfidentialInfoRedactorLite
 
     def redact_hyperlinks_html(txt)
       redacted_text = redact_hyperlinks(txt).gsub(/\>\s#{Regexp.escape(token_text)}\s\</, ">#{token_text}<").gsub(/\>\s#{Regexp.escape(number_text)}\s\</, ">#{number_text}<").gsub(/\>\s#{Regexp.escape(date_text)}\s\</, ">#{date_text}<").gsub(/\>\s#{Regexp.escape(email_text)}\s\</, ">#{email_text}<").gsub(/\>\s#{Regexp.escape(hyperlink_text)}\s\</, ">#{hyperlink_text}<")
-      original_sentence_array = txt.split(' ')
-      redacted_sentence_array = redacted_text.split(' ')
-      diff = original_sentence_array - redacted_sentence_array
-      final_hyperlinks_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+      if language.eql?('ja')
+        final_hyperlinks_tokens = txt.scan(/http[a-zA-Z\/\:\.\-]+|www[a-zA-Z\/\:\.\-]+/)
+      else
+        original_sentence_array = txt.split(' ')
+        redacted_sentence_array = redacted_text.split(' ')
+        diff = original_sentence_array - redacted_sentence_array
+        final_hyperlinks_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+      end
       [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(hyperlink_text)}/, "<span class='confidentialHyperlinks'>#{hyperlink_text}</span>"), final_hyperlinks_tokens]
     end
 

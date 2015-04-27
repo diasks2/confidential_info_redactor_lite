@@ -239,6 +239,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = 'My Transformation - avoid Trans.'
       expect(described_class.new(text: text, language: 'en', tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('My Transformation - avoid *****.')
     end
+
+    it 'redacts all confidential information from a text #007' do
+      text = 'これはjohn@gmail.comかk.light@tuv.eu.usかhttps://www.tm-town.comです.'
+      expect(described_class.new(text: text, language: 'ja', tokens: nil, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks_html[1]).to eq(["https://www.tm-town.com"])
+    end
   end
 
   describe '#redact_html' do
