@@ -96,7 +96,7 @@ module ConfidentialInfoRedactorLite
         diff = original_sentence_array - redacted_sentence_array
         final_hyperlinks_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
       end
-      [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(hyperlink_text)}/, "<span class='confidentialHyperlinks'>#{hyperlink_text}</span>"), final_hyperlinks_tokens]
+      [redacted_text.gsub(/(?<=[^\>]|\A)#{Regexp.escape(hyperlink_text)}/, "<span class='confidentialHyperlinks'>#{hyperlink_text}</span>"), final_hyperlinks_tokens]
     end
 
     def redact_numbers_html(txt)
@@ -109,7 +109,7 @@ module ConfidentialInfoRedactorLite
         diff = original_sentence_array - redacted_sentence_array
         final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
       end
-      [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(number_text)}/, "<span class='confidentialNumber'>#{number_text}</span>"), final_number_tokens]
+      [redacted_text.gsub(/(?<=[^\>]|\A)#{Regexp.escape(number_text)}/, "<span class='confidentialNumber'>#{number_text}</span>"), final_number_tokens]
     end
 
     def redact_emails_html(txt)
@@ -122,7 +122,7 @@ module ConfidentialInfoRedactorLite
         diff = original_sentence_array - redacted_sentence_array
         final_email_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
       end
-      [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(email_text)}/, "<span class='confidentialEmail'>#{email_text}</span>"), final_email_tokens]
+      [redacted_text.gsub(/(?<=[^\>]|\A)#{Regexp.escape(email_text)}/, "<span class='confidentialEmail'>#{email_text}</span>"), final_email_tokens]
     end
 
     def redact_dates_html(txt)

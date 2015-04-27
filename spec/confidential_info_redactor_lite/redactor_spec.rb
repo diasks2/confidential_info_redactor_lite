@@ -269,5 +269,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = 'LEGAL DISCLAIMER - CLA will not be held reponsible for changes.'
       expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact).to eq("LEGAL DISCLAIMER - ***** will not be held reponsible for changes.")
     end
+
+    it 'redacts all confidential information from a text #004' do
+      tokens = []
+      text = '1984 was a good year.'
+      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact_html).to eq("<span class='confidentialNumber'>**number**</span> was a good year.")
+    end
   end
 end
