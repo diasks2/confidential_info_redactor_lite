@@ -49,6 +49,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = 'On May 1st, 2000 Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq(["On <span class='confidentialDate'>*****</span> Coca-Cola announced a merger with Pepsi that will happen on <span class='confidentialDate'>*****</span>.", ['May 1st, 2000', 'December 15th, 2020']])
     end
+
+    it 'surrounds the redacted dates in spans and return the redacted dates from a text #002' do
+      text = '２０１１年１２月３１日です。'
+      expect(described_class.new(text: text, language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq(["<span class='confidentialDate'>*****</span> です。", ["２０１１年１２月３１日"]])
+    end
   end
 
   describe '#numbers' do
@@ -87,6 +92,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #001' do
       text = 'It was his 1st) time, not yet his 10th, not even his 2nd. The wood was 3/4" thick. It cost $200,000.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["It was his <span class='confidentialNumber'>*****</span>) time, not yet his <span class='confidentialNumber'>*****</span>, not even his <span class='confidentialNumber'>*****</span>. The wood was <span class='confidentialNumber'>*****</span> thick. It cost <span class='confidentialNumber'>*****</span>.", ["1st", "10th,", "2nd", "3/4\"", "$200,000"]])
+    end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #002' do
+      text = 'プロのミニチュアゴルファー２人のサイン。２人の出身国は別であること。（４５ポイント；それぞれが別の大陸出身だった場合、５ボーナスポイント。）'
+      expect(described_class.new(text: text, language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["プロのミニチュアゴルファー <span class='confidentialNumber'>*****</span> 人のサイン。 <span class='confidentialNumber'>*****</span> 人の出身国は別であること。（ <span class='confidentialNumber'>*****</span> ポイント；それぞれが別の大陸出身だった場合、 <span class='confidentialNumber'>*****</span> ボーナスポイント。）", ["２", "２", "４５", "５"]])
     end
   end
 

@@ -97,10 +97,14 @@ module ConfidentialInfoRedactorLite
 
     def redact_numbers_html(txt)
       redacted_text = redact_numbers(txt).gsub(/\>\s#{Regexp.escape(token_text)}\s\</, ">#{token_text}<").gsub(/\>\s#{Regexp.escape(number_text)}\s\</, ">#{number_text}<").gsub(/\>\s#{Regexp.escape(date_text)}\s\</, ">#{date_text}<").gsub(/\>\s#{Regexp.escape(email_text)}\s\</, ">#{email_text}<").gsub(/\>\s#{Regexp.escape(hyperlink_text)}\s\</, ">#{hyperlink_text}<")
-      original_sentence_array = txt.split(' ')
-      redacted_sentence_array = redacted_text.split(' ')
-      diff = original_sentence_array - redacted_sentence_array
-      final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+      if language.eql?('ja')
+        final_number_tokens = txt.scan(/[０１２３４５６７８９]+|\d+/)
+      else
+        original_sentence_array = txt.split(' ')
+        redacted_sentence_array = redacted_text.split(' ')
+        diff = original_sentence_array - redacted_sentence_array
+        final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+      end
       [redacted_text.gsub(/(?<=[^\>])#{Regexp.escape(number_text)}/, "<span class='confidentialNumber'>#{number_text}</span>"), final_number_tokens]
     end
 
@@ -115,44 +119,47 @@ module ConfidentialInfoRedactorLite
 
     def redact_dates_html(txt)
       redacted_text = redact_dates(txt)
-      original_sentence_array = txt.split(' ')
-      redacted_sentence_array = redacted_text.split(' ')
-      diff = original_sentence_array - redacted_sentence_array
-      date_tokens = []
-      redacted_text.split(' ').each_with_index do |redacted_token, index|
-        if redacted_token.gsub(/\./, '') == date_text
-          original_sentence_array.each_with_index do |original_token, i|
-            if redacted_sentence_array[index - 1] == original_token &&
-              diff.include?(original_sentence_array[i + 1]) &&
-              original_sentence_array[i + 2] == redacted_sentence_array[index + 1]
-              date_tokens << original_sentence_array[i + 1]
-            end
-            if redacted_sentence_array[index - 1] == original_token &&
-              diff.include?(original_sentence_array[i + 1]) &&
-              diff.include?(original_sentence_array[i + 2]) &&
-              original_sentence_array[i + 3] == redacted_sentence_array[index + 1]
-              date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2]
-            end
-            if redacted_sentence_array[index - 1] == original_token &&
-              diff.include?(original_sentence_array[i + 1]) &&
-              diff.include?(original_sentence_array[i + 2]) &&
-              diff.include?(original_sentence_array[i + 3]) &&
-              original_sentence_array[i + 4] == redacted_sentence_array[index + 1]
-              date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2] + ' ' + original_sentence_array[i + 3]
-            end
-            if redacted_sentence_array[index - 1] == original_token &&
-              diff.include?(original_sentence_array[i + 1]) &&
-              diff.include?(original_sentence_array[i + 2]) &&
-              diff.include?(original_sentence_array[i + 3]) &&
-              diff.include?(original_sentence_array[i + 4]) &&
-              original_sentence_array[i + 5] == redacted_sentence_array[index + 1]
-              date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2] + ' ' + original_sentence_array[i + 3] + ' ' + original_sentence_array[i + 4]
+      if language.eql?('ja')
+        final_date_tokens = txt.scan(/[０１２３４５６７８９]+年[０１２３４５６７８９]+月[０１２３４５６７８９]+日|[０１２３４５６７８９]+月[０１２３４５６７８９]+日/)
+      else
+        original_sentence_array = txt.split(' ')
+        redacted_sentence_array = redacted_text.split(' ')
+        diff = original_sentence_array - redacted_sentence_array
+        date_tokens = []
+        redacted_text.split(' ').each_with_index do |redacted_token, index|
+          if redacted_token.gsub(/\./, '') == date_text
+            original_sentence_array.each_with_index do |original_token, i|
+              if redacted_sentence_array[index - 1] == original_token &&
+                diff.include?(original_sentence_array[i + 1]) &&
+                original_sentence_array[i + 2] == redacted_sentence_array[index + 1]
+                date_tokens << original_sentence_array[i + 1]
+              end
+              if redacted_sentence_array[index - 1] == original_token &&
+                diff.include?(original_sentence_array[i + 1]) &&
+                diff.include?(original_sentence_array[i + 2]) &&
+                original_sentence_array[i + 3] == redacted_sentence_array[index + 1]
+                date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2]
+              end
+              if redacted_sentence_array[index - 1] == original_token &&
+                diff.include?(original_sentence_array[i + 1]) &&
+                diff.include?(original_sentence_array[i + 2]) &&
+                diff.include?(original_sentence_array[i + 3]) &&
+                original_sentence_array[i + 4] == redacted_sentence_array[index + 1]
+                date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2] + ' ' + original_sentence_array[i + 3]
+              end
+              if redacted_sentence_array[index - 1] == original_token &&
+                diff.include?(original_sentence_array[i + 1]) &&
+                diff.include?(original_sentence_array[i + 2]) &&
+                diff.include?(original_sentence_array[i + 3]) &&
+                diff.include?(original_sentence_array[i + 4]) &&
+                original_sentence_array[i + 5] == redacted_sentence_array[index + 1]
+                date_tokens << original_sentence_array[i + 1] + ' ' + original_sentence_array[i + 2] + ' ' + original_sentence_array[i + 3] + ' ' + original_sentence_array[i + 4]
+              end
             end
           end
         end
+        final_date_tokens = date_tokens.map { |token| token[-1].eql?('.') ? token[0...-1] : token }
       end
-
-      final_date_tokens = date_tokens.map { |token| token[-1].eql?('.') ? token[0...-1] : token }
       [redacted_text.gsub(/#{Regexp.escape(date_text)}/, "<span class='confidentialDate'>#{date_text}</span>"), final_date_tokens]
     end
 
