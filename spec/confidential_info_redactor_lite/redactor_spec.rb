@@ -129,6 +129,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = 'Visit https://www.tm-town.com for more info.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks).to eq('Visit <redacted hyperlink> for more info.')
     end
+
+    it 'redacts hyperlinks from a text #002' do
+      text = 'Visit www.tm-town.com for more info.'
+      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks).to eq('Visit <redacted hyperlink> for more info.')
+    end
   end
 
   describe '#hyperlinks_html' do
