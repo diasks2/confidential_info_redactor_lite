@@ -8,6 +8,10 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
   let(:en_month_abbr) { %w(jan feb mar apr jun jul aug sep sept oct nov dec) }
 
   describe '#dates' do
+    it 'handles nil as a text argument' do
+      expect(described_class.new(text: nil, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('')
+    end
+
     it 'redacts dates from a text #001' do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000.')
@@ -45,6 +49,10 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
   end
 
   describe '#dates_html' do
+    it 'handles nil as a text argument' do
+      expect(described_class.new(text: nil, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq([])
+    end
+
     it 'surrounds the redacted dates in spans and return the redacted dates from a text #001' do
       text = 'On May 1st, 2000 Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq(["On <span class='confidentialDate'>*****</span> Coca-Cola announced a merger with Pepsi that will happen on <span class='confidentialDate'>*****</span>.", ['May 1st, 2000', 'December 15th, 2020']])
@@ -57,6 +65,10 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
   end
 
   describe '#numbers' do
+    it 'handles nil as a text argument' do
+      expect(described_class.new(text: nil, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('')
+    end
+
     it 'redacts numbers from a text #001' do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000.'
       expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for <redacted number>.')

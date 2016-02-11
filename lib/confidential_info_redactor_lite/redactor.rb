@@ -30,42 +30,52 @@ module ConfidentialInfoRedactorLite
     end
 
     def dates
+      return '' if text.nil?
       redact_dates(text)
     end
 
     def dates_html
+      return [] if text.nil?
       redact_dates_html(text)
     end
 
     def numbers
+      return '' if text.nil?
       redact_numbers(text)
     end
 
     def numbers_html
+      return [] if text.nil?
       redact_numbers_html(text)
     end
 
     def emails
+      return '' if text.nil?
       redact_emails(text)
     end
 
     def emails_html
+      return [] if text.nil?
       redact_emails_html(text)
     end
 
     def hyperlinks
+      return '' if text.nil?
       redact_hyperlinks(text)
     end
 
     def hyperlinks_html
+      return [] if text.nil?
       redact_hyperlinks_html(text)
     end
 
     def proper_nouns
+      return '' if text.nil?
       redact_tokens(text)
     end
 
     def redact
+      return '' if text.nil?
       if ignore_emails
         redacted_text = text
       else
@@ -78,6 +88,7 @@ module ConfidentialInfoRedactorLite
     end
 
     def redact_html
+      return [] if text.nil?
       redacted_text = redact_dates_html(text)[0]
       redacted_text = redact_emails_html(redacted_text)[0]
       redacted_text = redact_hyperlinks_html(redacted_text)[0]
