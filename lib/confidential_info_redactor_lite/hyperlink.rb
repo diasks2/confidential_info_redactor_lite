@@ -5,11 +5,8 @@ module ConfidentialInfoRedactorLite
     HYPERLINK_REGEX = /(http|https|www)(\.|:)/
 
     def replace(text)
-      new_string = text
-      text.split(/\s+/).each do |token|
-        new_string = new_string.gsub(/#{Regexp.escape(token.gsub(/\.\z/, ''))}/, ' <redacted hyperlink> ') if !(token !~ HYPERLINK_REGEX)
-      end
-      new_string
+      text.split(/\s+/).map { |token| text = text.gsub(/#{Regexp.escape(token.gsub(/\.\z/, ''))}/, ' <redacted hyperlink> ') if !(token !~ HYPERLINK_REGEX) }
+      text
     end
   end
 end
