@@ -36,13 +36,11 @@ module ConfidentialInfoRedactorLite
     end
 
     def non_confidential_token?(token, includes_confidential)
-      corpus.include?(token) ||
-     !includes_confidential ||
-     (corpus.include?(token[0...-2]) && token[-2..-1].eql?('en')) ||
-     (corpus.include?(token[0...-2]) && token[-2..-1].eql?('es')) ||
-     (corpus.include?(token[0...-2]) && token[-2..-1].eql?('er')) ||
-     (corpus.include?(token[0...-1]) && token[-1].eql?('s')) ||
-     (corpus.include?(token[0...-1]) && token[-1].eql?('n'))
+      corpus.include?(token) || !includes_confidential || singular_in_corpus?(token)
+    end
+
+    def singular_in_corpus?(token)
+      corpus.include?(token[0...-1]) && token[-1].eql?('s')
     end
 
     def includes_confidential?(token)
@@ -66,7 +64,6 @@ module ConfidentialInfoRedactorLite
           end
         end
       end
-      extracted_terms
     end
   end
 end
