@@ -16,25 +16,24 @@ module ConfidentialInfoRedactorLite
 
     JA_DATE_REGEX_SHORT = /[０１２３４５６７８９]+月[０１２３４５６７８９]+日/
 
-    attr_reader :string, :dow, :dow_abbr, :months, :months_abbr
-    def initialize(string:, dow:, dow_abbr:, months:, months_abbr:)
-      @string = string
+    attr_reader :dow, :dow_abbr, :months, :months_abbr
+    def initialize(dow:, dow_abbr:, months:, months_abbr:)
       @dow = dow
       @dow_abbr = dow_abbr
       @months = months
       @months_abbr = months_abbr
     end
 
-    def includes_date?
-      long_date || number_only_date
+    def includes_date?(text)
+      long_date(text) || number_only_date(text)
     end
 
-    def replace
-      return string unless dow.kind_of?(Array) && dow_abbr.kind_of?(Array) && months.kind_of?(Array) && months_abbr.kind_of?(Array)
-      new_string = string.dup
+    def replace(text)
+      return text unless dow.kind_of?(Array) && dow_abbr.kind_of?(Array) && months.kind_of?(Array) && months_abbr.kind_of?(Array)
+      new_string = text.dup
       counter = 0
       dow_abbr.each do |day|
-        counter +=1 if string.include?('day')
+        counter +=1 if text.include?('day')
       end
       new_string = new_string.gsub(JA_DATE_REGEX_LONG, '<redacted date>')
       new_string = new_string.gsub(JA_DATE_REGEX_SHORT, '<redacted date>')
@@ -107,12 +106,12 @@ module ConfidentialInfoRedactorLite
                      .gsub(DIGIT_ONLY_YEAR_LAST_REGEX, ' <redacted date> ')
     end
 
-    def occurences
-      replace.scan(/<redacted date>/).size
+    def occurences(text)
+      replace(text).scan(/<redacted date>/).size
     end
 
-    def replace_number_only_date
-      string.gsub(DMY_MDY_REGEX, ' <redacted date> ')
+    def replace_number_only_date(text)
+      text.gsub(DMY_MDY_REGEX, ' <redacted date> ')
             .gsub(YMD_YDM_REGEX, ' <redacted date> ')
             .gsub(DIGIT_ONLY_YEAR_FIRST_REGEX, ' <redacted date> ')
             .gsub(DIGIT_ONLY_YEAR_LAST_REGEX, ' <redacted date> ')
@@ -120,45 +119,45 @@ module ConfidentialInfoRedactorLite
 
     private
 
-    def long_date
+    def long_date(text)
       match_found = false
       dow.each do |day|
         months.each do |month|
           break if match_found
-          match_found = check_for_matches(day, month)
+          match_found = check_for_matches(day, month, text)
         end
         months_abbr.each do |month|
           break if match_found
-          match_found = check_for_matches(day, month)
+          match_found = check_for_matches(day, month, text)
         end
       end
       dow_abbr.each do |day|
         months.each do |month|
           break if match_found
-          match_found = !(string !~ /#{Regexp.escape(day)}(\.)*(,)*\s#{Regexp.escape(month)}\s\d+(rd|th|st)*(,)*\s\d{4}/i)
+          match_found = !(text !~ /#{Regexp.escape(day)}(\.)*(,)*\s#{Regexp.escape(month)}\s\d+(rd|th|st)*(,)*\s\d{4}/i)
         end
         months_abbr.each do |month|
           break if match_found
-          match_found = !(string !~ /#{Regexp.escape(day)}(\.)*(,)*\s#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*(,)*\s\d{4}/i)
+          match_found = !(text !~ /#{Regexp.escape(day)}(\.)*(,)*\s#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*(,)*\s\d{4}/i)
         end
       end
       match_found
     end
 
-    def number_only_date
-      !(string !~ DMY_MDY_REGEX) ||
-      !(string !~ YMD_YDM_REGEX) ||
-      !(string !~ DIGIT_ONLY_YEAR_FIRST_REGEX) ||
-      !(string !~ DIGIT_ONLY_YEAR_LAST_REGEX)
+    def number_only_date(text)
+      !(text !~ DMY_MDY_REGEX) ||
+      !(text !~ YMD_YDM_REGEX) ||
+      !(text !~ DIGIT_ONLY_YEAR_FIRST_REGEX) ||
+      !(text !~ DIGIT_ONLY_YEAR_LAST_REGEX)
     end
 
-    def check_for_matches(day, month)
-      !(string !~ /#{Regexp.escape(day)}(,)*\s#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*(,)*\s\d{4}/i) ||
-      !(string !~ /#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*(,)*\s\d{4}/i) ||
-      !(string !~ /\d{4}\.*\s#{Regexp.escape(month)}\s\d+(rd|th|st)*/i) ||
-      !(string !~ /\d{4}(\.|-|\/)*#{Regexp.escape(month)}(\.|-|\/)*\d+/i) ||
-      !(string !~ /#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*/i) ||
-      !(string !~ /\d{2}(\.|-|\/)*#{Regexp.escape(month)}(\.|-|\/)*(\d{4}|\d{2})/i)
+    def check_for_matches(day, month, text)
+      !(text !~ /#{Regexp.escape(day)}(,)*\s#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*(,)*\s\d{4}/i) ||
+      !(text !~ /#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*(,)*\s\d{4}/i) ||
+      !(text !~ /\d{4}\.*\s#{Regexp.escape(month)}\s\d+(rd|th|st)*/i) ||
+      !(text !~ /\d{4}(\.|-|\/)*#{Regexp.escape(month)}(\.|-|\/)*\d+/i) ||
+      !(text !~ /#{Regexp.escape(month)}(\.)*\s\d+(rd|th|st)*/i) ||
+      !(text !~ /\d{2}(\.|-|\/)*#{Regexp.escape(month)}(\.|-|\/)*(\d{4}|\d{2})/i)
     end
   end
 end

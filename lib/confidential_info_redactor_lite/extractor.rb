@@ -5,16 +5,15 @@ module ConfidentialInfoRedactorLite
     EXTRACT_REGEX = /(?<=\s|^|\s\"|\s\“|\s\«|\s\‹|\s\”|\s\»|\s\›)([A-Z]\S*\s)*[A-Z]\S*(?=(\s|\.|\z))|(?<=\s|^|\s\"|\s\”|\s\»|\s\›|\s\“|\s\«|\s\‹)[i][A-Z][a-z]+/
 
     PUNCTUATION_REGEX = /[\?\)\(\!\\\/\"\:\;\,\”\“\«\»\‹\›]/
-    attr_reader :text, :language, :corpus
-    def initialize(text:, corpus:, **args)
-      @text = text.gsub(/[’‘]/, "'").freeze
+    attr_reader :language, :corpus
+    def initialize(corpus:, **args)
       @corpus = Set.new(corpus).freeze
       @language = args[:language] || 'en'
     end
 
-    def extract
+    def extract(text)
       extracted_terms = []
-      PragmaticSegmenter::Segmenter.new(text: text, language: language).segment.each do |segment|
+      PragmaticSegmenter::Segmenter.new(text: text.gsub(/[’‘]/, "'"), language: language).segment.each do |segment|
         initial_extracted_terms = extract_preliminary_terms(segment)
         next if initial_extracted_terms.length.eql?(segment.split(' ').length) && search_for_ngrams(initial_extracted_terms)
         search_ngrams(initial_extracted_terms, extracted_terms)

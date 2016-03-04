@@ -9,149 +9,149 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
 
   describe '#dates' do
     it 'handles nil as a text argument' do
-      expect(described_class.new(text: nil, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates(nil)).to eq('')
     end
 
     it 'redacts dates from a text #001' do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates(text)).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000.')
     end
 
     it 'redacts dates from a text #002' do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date>.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates(text)).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date>.')
     end
 
     it 'redacts dates from a text #003' do
       text = 'December 5, 2010 - Coca-Cola announced a merger with Pepsi.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('<redacted date> - Coca-Cola announced a merger with Pepsi.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates(text)).to eq('<redacted date> - Coca-Cola announced a merger with Pepsi.')
     end
 
     it 'redacts dates from a text #004' do
       text = 'The scavenger hunt ends on Dec. 31st, 2011.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates).to eq('The scavenger hunt ends on <redacted date>.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).dates(text)).to eq('The scavenger hunt ends on <redacted date>.')
     end
 
     it 'handles nil date objects' do
       text = 'The scavenger hunt ends on Dec. 31st, 2011.'
-      expect(described_class.new(text: text, language: 'en', dow: nil, dow_abbr: nil, months: nil, months_abbr: nil).dates).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
+      expect(described_class.new(language: 'en', dow: nil, dow_abbr: nil, months: nil, months_abbr: nil).dates(text)).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
     end
 
     it 'handles empty string date objects' do
       text = 'The scavenger hunt ends on Dec. 31st, 2011.'
-      expect(described_class.new(text: text, language: 'en', dow: '', dow_abbr: '', months: '', months_abbr: '').dates).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
+      expect(described_class.new(language: 'en', dow: '', dow_abbr: '', months: '', months_abbr: '').dates(text)).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
     end
 
     it 'handles empty array date objects' do
       text = 'The scavenger hunt ends on Dec. 31st, 2011.'
-      expect(described_class.new(text: text, language: 'en', dow: [], dow_abbr: [], months: [], months_abbr: []).dates).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
+      expect(described_class.new(language: 'en', dow: [], dow_abbr: [], months: [], months_abbr: []).dates(text)).to eq('The scavenger hunt ends on Dec. 31st, 2011.')
     end
   end
 
   describe '#dates_html' do
     it 'handles nil as a text argument' do
-      expect(described_class.new(text: nil, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq([])
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html(nil)).to eq([])
     end
 
     it 'surrounds the redacted dates in spans and return the redacted dates from a text #001' do
       text = 'On May 1st, 2000 Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq(["On <span class='confidentialDate'>*****</span> Coca-Cola announced a merger with Pepsi that will happen on <span class='confidentialDate'>*****</span>.", ['May 1st, 2000', 'December 15th, 2020']])
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html(text)).to eq(["On <span class='confidentialDate'>*****</span> Coca-Cola announced a merger with Pepsi that will happen on <span class='confidentialDate'>*****</span>.", ['May 1st, 2000', 'December 15th, 2020']])
     end
 
     it 'surrounds the redacted dates in spans and return the redacted dates from a text #002' do
       text = '２０１１年１２月３１日です。'
-      expect(described_class.new(text: text, language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html).to eq(["<span class='confidentialDate'>*****</span> です。", ["２０１１年１２月３１日"]])
+      expect(described_class.new(language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html(text)).to eq(["<span class='confidentialDate'>*****</span> です。", ["２０１１年１２月３１日"]])
     end
   end
 
   describe '#numbers' do
     it 'handles nil as a text argument' do
-      expect(described_class.new(text: nil, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(nil)).to eq('')
     end
 
     it 'redacts numbers from a text #001' do
       text = 'Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for $200,000,000,000.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for <redacted number>.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('Coca-Cola announced a merger with Pepsi that will happen on <redacted date> for <redacted number>.')
     end
 
     it 'redacts numbers from a text #002' do
       text = '200 years ago.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('<redacted number> years ago.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('<redacted number> years ago.')
     end
 
     it 'redacts numbers from a text #003' do
       text = 'It was his 1st time, not yet his 10th, not even his 2nd. The wood was 3/4" thick.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('It was his <redacted number> time, not yet his <redacted number>, not even his <redacted number>. The wood was <redacted number> thick.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('It was his <redacted number> time, not yet his <redacted number>, not even his <redacted number>. The wood was <redacted number> thick.')
     end
 
     it 'redacts numbers from a text #004' do
       text = 'Checking file of %2'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('Checking file of <redacted number>')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('Checking file of <redacted number>')
     end
 
     it 'redacts numbers from a text #005' do
       text = 'zawiera pliki skompresowane (%2).'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('zawiera pliki skompresowane (<redacted number>).')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('zawiera pliki skompresowane (<redacted number>).')
     end
 
     it 'redacts numbers from a text #006' do
       text = '２１３４か２４か０'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq("<redacted number> か <redacted number> か <redacted number>")
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq("<redacted number> か <redacted number> か <redacted number>")
     end
 
     it 'redacts numbers from a text #007' do
       text = '100'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers).to eq('<redacted number>')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('<redacted number>')
     end
   end
 
   describe '#numbers_html' do
     it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #001' do
       text = 'It was his 1st) time, not yet his 10th, not even his 2nd. The wood was 3/4" thick. It cost $200,000.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["It was his <span class='confidentialNumber'>*****</span>) time, not yet his <span class='confidentialNumber'>*****</span>, not even his <span class='confidentialNumber'>*****</span>. The wood was <span class='confidentialNumber'>*****</span> thick. It cost <span class='confidentialNumber'>*****</span>.", ["1st", "10th,", "2nd", "3/4\"", "$200,000"]])
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html(text)).to eq(["It was his <span class='confidentialNumber'>*****</span>) time, not yet his <span class='confidentialNumber'>*****</span>, not even his <span class='confidentialNumber'>*****</span>. The wood was <span class='confidentialNumber'>*****</span> thick. It cost <span class='confidentialNumber'>*****</span>.", ["1st", "10th,", "2nd", "3/4\"", "$200,000"]])
     end
 
     it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #002' do
       text = 'プロのミニチュアゴルファー２人のサイン。２人の出身国は別であること。（４５ポイント；それぞれが別の大陸出身だった場合、５ボーナスポイント。）'
-      expect(described_class.new(text: text, language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html).to eq(["プロのミニチュアゴルファー <span class='confidentialNumber'>*****</span> 人のサイン。 <span class='confidentialNumber'>*****</span> 人の出身国は別であること。（ <span class='confidentialNumber'>*****</span> ポイント；それぞれが別の大陸出身だった場合、 <span class='confidentialNumber'>*****</span> ボーナスポイント。）", ["２", "２", "４５", "５"]])
+      expect(described_class.new(language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html(text)).to eq(["プロのミニチュアゴルファー <span class='confidentialNumber'>*****</span> 人のサイン。 <span class='confidentialNumber'>*****</span> 人の出身国は別であること。（ <span class='confidentialNumber'>*****</span> ポイント；それぞれが別の大陸出身だった場合、 <span class='confidentialNumber'>*****</span> ボーナスポイント。）", ["２", "２", "４５", "５"]])
     end
   end
 
   describe '#emails' do
     it 'redacts email addresses from a text #001' do
       text = 'His email is john@gmail.com or you can try k.light@tuv.eu.us.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).emails).to eq('His email is <redacted email> or you can try <redacted email>.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).emails(text)).to eq('His email is <redacted email> or you can try <redacted email>.')
     end
 
     it 'redacts email addresses from a text #002' do
       text = 'His email is (john@gmail.com) or you can try (k.light@tuv.eu.us).'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).emails).to eq('His email is (<redacted email>) or you can try (<redacted email>).')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).emails(text)).to eq('His email is (<redacted email>) or you can try (<redacted email>).')
     end
   end
 
   describe '#emails_html' do
     it 'surrounds the redacted emails in spans and return the redacted emails from a text #001' do
       text = 'His email is (john@gmail.com) or you can try (k.light@tuv.eu.us).'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, token_text: "*****").emails_html).to eq(["His email is (<span class='confidentialEmail'><redacted email></span>) or you can try (<span class='confidentialEmail'><redacted email></span>).", ["john@gmail.com", "k.light@tuv.eu.us"]])
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, token_text: "*****").emails_html(text)).to eq(["His email is (<span class='confidentialEmail'><redacted email></span>) or you can try (<span class='confidentialEmail'><redacted email></span>).", ["john@gmail.com", "k.light@tuv.eu.us"]])
     end
   end
 
   describe '#hyperlinks' do
     it 'redacts hyperlinks from a text #001' do
       text = 'Visit https://www.tm-town.com for more info.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks).to eq('Visit <redacted hyperlink> for more info.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks(text)).to eq('Visit <redacted hyperlink> for more info.')
     end
 
     it 'redacts hyperlinks from a text #002' do
       text = 'Visit www.tm-town.com for more info.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks).to eq('Visit <redacted hyperlink> for more info.')
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks(text)).to eq('Visit <redacted hyperlink> for more info.')
     end
   end
 
   describe '#hyperlinks_html' do
     it 'surrounds the redacted hyperlinks in spans and return the redacted hyperlinks from a text #001' do
       text = 'Visit https://www.tm-town.com for more info or https://www.google.com.'
-      expect(described_class.new(text: text, language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, token_text: "*****", hyperlink_text: "*****", email_text: "*****").hyperlinks_html).to eq(["Visit <span class='confidentialHyperlinks'>*****</span> for more info or <span class='confidentialHyperlinks'>*****</span>.", ["https://www.tm-town.com", "https://www.google.com"]])
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, token_text: "*****", hyperlink_text: "*****", email_text: "*****").hyperlinks_html(text)).to eq(["Visit <span class='confidentialHyperlinks'>*****</span> for more info or <span class='confidentialHyperlinks'>*****</span>.", ["https://www.tm-town.com", "https://www.google.com"]])
     end
   end
 
@@ -159,13 +159,13 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     it 'redacts tokens from a text #001' do
       tokens = ['Coca-Cola', 'Pepsi']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).proper_nouns).to eq('<redacted> announced a merger with <redacted> that will happen on on December 15th, 2020 for $200,000,000,000.')
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).proper_nouns(text)).to eq('<redacted> announced a merger with <redacted> that will happen on on December 15th, 2020 for $200,000,000,000.')
     end
 
     it 'redacts tokens from a text #002' do
       tokens = ['Coca-Cola', 'Pepsi']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, token_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).proper_nouns).to eq('***** announced a merger with ***** that will happen on on December 15th, 2020 for $200,000,000,000.')
+      expect(described_class.new(language: 'en', tokens: tokens, token_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).proper_nouns(text)).to eq('***** announced a merger with ***** that will happen on on December 15th, 2020 for $200,000,000,000.')
     end
   end
 
@@ -173,7 +173,7 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     it 'redacts all confidential information from a text #001' do
       tokens = ['Coca-Cola', 'Pepsi']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('<redacted> announced a merger with <redacted> that will happen on on <redacted date> for <redacted number>.')
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact(text)).to eq('<redacted> announced a merger with <redacted> that will happen on on <redacted date> for <redacted number>.')
     end
 
     it 'redacts all confidential information from a text #002' do
@@ -234,37 +234,37 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
 
         Don’t forget to use your imagination and creativity!
       EOF
-      tokens = ConfidentialInfoRedactorLite::Extractor.new(text: text, corpus: corpus).extract
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq("        <redacted>\n\n        <redacted> is hosting the <redacted number> <redacted>.  So get out your putter and your camera and see if you have what it takes.  Are you a <redacted>?\n\n        <redacted>: <redacted number>) <redacted> of <redacted number> professional miniature golfers, each from a different country. (<redacted number> points; <redacted number> bonus points if the professional miniature golfers are also from <redacted number> different continents) <redacted number>) <redacted> of yourself next to each obstacle in our list of the Top <redacted number> <redacted>. (<redacted number> points; <redacted number> bonus points for each obstacle that exactly matches the one pictured in the article) <redacted number>) <redacted> your own full-size miniature golf hole. (<redacted number> points; up to <redacted number> bonus points available depending on the craftsmanship, playability, creativity and fun factor of your hole) <redacted number>) <redacted> of yourself making a hole-in-one on two consecutive miniature golf holes. <redacted> video must be one continuous shot with no editing. (<redacted number> points) <redacted number>) <redacted> of yourself with the <redacted> mascot. (<redacted number> points; <redacted number> bonus points if you are wearing a <redacted> t-shirt) <redacted number>) <redacted> of yourself with the completed <redacted> wobblehead. (<redacted number> points; <redacted number> bonus points if the picture is taken at a miniature golf course) <redacted number>) <redacted> of a completed scorecard from a round of miniature golf. <redacted> round of golf must have taken place after the start of this scavenger hunt. (<redacted number> points) <redacted number>) <redacted> of completed scorecards from <redacted number> different miniature golf courses. <redacted> round of golf must have taken place after the start of this scavenger hunt. (<redacted number> points) <redacted number>) <redacted> an entry to the <redacted number> <redacted>. (<redacted number> points; <redacted number> bonus points if your entry gets more than <redacted number> votes) <redacted number>) <redacted> from the <redacted> app showing a 9-hole score below par. (<redacted number> points) <redacted number>) <redacted> from the <redacted> app showing that you have successfully unlocked all of the holes in the game. (<redacted number> points) <redacted number>) <redacted> of the <redacted> wobblehead at a <redacted>. (<redacted number> points) <redacted number>) <redacted> and submit the <redacted> ‘Practice <redacted>’ and ‘Final <redacted>’ for any one of the <redacted> math or physics lessons. (<redacted number> points; <redacted number> bonus points if you complete two lessons) <redacted number>) <redacted> of yourself with at least <redacted number> different colored miniature golf balls. (<redacted number> points; <redacted number> bonus points for each additional color {limit of <redacted number> bonus points}) <redacted number>) <redacted> of yourself with a famous golfer or miniature golfer. (<redacted number> points; <redacted number> bonus points if the golfer is on the <redacted> tour <redacted> you are wearing a <redacted> t-shirt in the picture) <redacted number>) <redacted> of yourself making a hole-in-one on a miniature golf hole with a loop-de-loop obstacle. (<redacted number> points) <redacted number>) <redacted> of yourself successfully making a trick miniature golf shot. (<redacted number> points; up to <redacted number> bonus points available depending on the difficulty and complexity of the trick shot)\n\n\n        Prizes: <redacted number> <redacted> <redacted>\n\n        <redacted>\n        (<redacted number>  <redacted number> <redacted> - <redacted>)\n\n        <redacted> team will judge the scavenger hunt and all decisions will be final. <redacted> is sponsoring it. <redacted> scavenger hunt is open to anyone and everyone.  <redacted> scavenger hunt ends on <redacted date>.\n\n        <redacted> enter the scavenger hunt, send an email to info <redacted> putterking <redacted> com with the subject line: \"<redacted>\".  In the email please include links to the pictures and videos you are submitting.  You can utilize free photo and video hosting sites such as <redacted>, <redacted>, <redacted>, <redacted>, etc. for your submissions.\n\n        <redacted> entering the <redacted>, you allow <redacted> to use or link to any of the pictures or videos you submit for advertisements and promotions.\n\n        Don’t forget to use your imagination and creativity!\n")
+      tokens = ConfidentialInfoRedactorLite::Extractor.new(corpus: corpus).extract(text)
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact(text)).to eq("        <redacted>\n\n        <redacted> is hosting the <redacted number> <redacted>.  So get out your putter and your camera and see if you have what it takes.  Are you a <redacted>?\n\n        <redacted>: <redacted number>) <redacted> of <redacted number> professional miniature golfers, each from a different country. (<redacted number> points; <redacted number> bonus points if the professional miniature golfers are also from <redacted number> different continents) <redacted number>) <redacted> of yourself next to each obstacle in our list of the Top <redacted number> <redacted>. (<redacted number> points; <redacted number> bonus points for each obstacle that exactly matches the one pictured in the article) <redacted number>) <redacted> your own full-size miniature golf hole. (<redacted number> points; up to <redacted number> bonus points available depending on the craftsmanship, playability, creativity and fun factor of your hole) <redacted number>) <redacted> of yourself making a hole-in-one on two consecutive miniature golf holes. <redacted> video must be one continuous shot with no editing. (<redacted number> points) <redacted number>) <redacted> of yourself with the <redacted> mascot. (<redacted number> points; <redacted number> bonus points if you are wearing a <redacted> t-shirt) <redacted number>) <redacted> of yourself with the completed <redacted> wobblehead. (<redacted number> points; <redacted number> bonus points if the picture is taken at a miniature golf course) <redacted number>) <redacted> of a completed scorecard from a round of miniature golf. <redacted> round of golf must have taken place after the start of this scavenger hunt. (<redacted number> points) <redacted number>) <redacted> of completed scorecards from <redacted number> different miniature golf courses. <redacted> round of golf must have taken place after the start of this scavenger hunt. (<redacted number> points) <redacted number>) <redacted> an entry to the <redacted number> <redacted>. (<redacted number> points; <redacted number> bonus points if your entry gets more than <redacted number> votes) <redacted number>) <redacted> from the <redacted> app showing a 9-hole score below par. (<redacted number> points) <redacted number>) <redacted> from the <redacted> app showing that you have successfully unlocked all of the holes in the game. (<redacted number> points) <redacted number>) <redacted> of the <redacted> wobblehead at a <redacted>. (<redacted number> points) <redacted number>) <redacted> and submit the <redacted> ‘Practice <redacted>’ and ‘Final <redacted>’ for any one of the <redacted> math or physics lessons. (<redacted number> points; <redacted number> bonus points if you complete two lessons) <redacted number>) <redacted> of yourself with at least <redacted number> different colored miniature golf balls. (<redacted number> points; <redacted number> bonus points for each additional color {limit of <redacted number> bonus points}) <redacted number>) <redacted> of yourself with a famous golfer or miniature golfer. (<redacted number> points; <redacted number> bonus points if the golfer is on the <redacted> tour <redacted> you are wearing a <redacted> t-shirt in the picture) <redacted number>) <redacted> of yourself making a hole-in-one on a miniature golf hole with a loop-de-loop obstacle. (<redacted number> points) <redacted number>) <redacted> of yourself successfully making a trick miniature golf shot. (<redacted number> points; up to <redacted number> bonus points available depending on the difficulty and complexity of the trick shot)\n\n\n        Prizes: <redacted number> <redacted> <redacted>\n\n        <redacted>\n        (<redacted number>  <redacted number> <redacted> - <redacted>)\n\n        <redacted> team will judge the scavenger hunt and all decisions will be final. <redacted> is sponsoring it. <redacted> scavenger hunt is open to anyone and everyone.  <redacted> scavenger hunt ends on <redacted date>.\n\n        <redacted> enter the scavenger hunt, send an email to info <redacted> putterking <redacted> com with the subject line: \"<redacted>\".  In the email please include links to the pictures and videos you are submitting.  You can utilize free photo and video hosting sites such as <redacted>, <redacted>, <redacted>, <redacted>, etc. for your submissions.\n\n        <redacted> entering the <redacted>, you allow <redacted> to use or link to any of the pictures or videos you submit for advertisements and promotions.\n\n        Don’t forget to use your imagination and creativity!\n")
     end
 
     it 'redacts all confidential information from a text #003' do
       tokens = ['Coca-Cola', 'Pepsi', 'John Smith']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('<redacted> announced a merger with <redacted> that will happen on <redacted date> for <redacted number>. Please contact <redacted> at <redacted email> or visit <redacted hyperlink>.')
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact(text)).to eq('<redacted> announced a merger with <redacted> that will happen on <redacted date> for <redacted number>. Please contact <redacted> at <redacted email> or visit <redacted hyperlink>.')
     end
 
     it 'redacts all confidential information from a text #004' do
       tokens = ['Coca-Cola', 'Pepsi', 'John Smith']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, ignore_numbers: true, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('<redacted> announced a merger with <redacted> that will happen on <redacted date> for $200,000,000,000. Please contact <redacted> at <redacted email> or visit <redacted hyperlink>.')
+      expect(described_class.new(language: 'en', tokens: tokens, ignore_numbers: true, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact(text)).to eq('<redacted> announced a merger with <redacted> that will happen on <redacted date> for $200,000,000,000. Please contact <redacted> at <redacted email> or visit <redacted hyperlink>.')
     end
 
     it 'redacts all confidential information from a text #005' do
       tokens = ['Coca-Cola', 'Pepsi', 'John Smith']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on December 15th, 2020 for $200,000,000,000. Please contact John Smith at j.smith@example.com or visit http://www.super-fake-merger.com.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('***** announced a merger with ***** that will happen on ^^redacted date^^ for **redacted number**. Please contact ***** at ***** or visit *****.')
+      expect(described_class.new(language: 'en', tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact(text)).to eq('***** announced a merger with ***** that will happen on ^^redacted date^^ for **redacted number**. Please contact ***** at ***** or visit *****.')
     end
 
     it 'redacts all confidential information from a text #006' do
       tokens = ['Trans']
       text = 'My Transformation - avoid Trans.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact).to eq('My Transformation - avoid *****.')
+      expect(described_class.new(language: 'en', tokens: tokens, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).redact(text)).to eq('My Transformation - avoid *****.')
     end
 
     it 'redacts all confidential information from a text #007' do
       text = 'これはjohn@gmail.comかk.light@tuv.eu.usかhttps://www.tm-town.comです.'
-      expect(described_class.new(text: text, language: 'ja', tokens: nil, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks_html[1]).to eq(["https://www.tm-town.com"])
+      expect(described_class.new(language: 'ja', tokens: nil, number_text: '**redacted number**', date_text: '^^redacted date^^', token_text: '*****', hyperlink_text: '*****', email_text: '*****', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).hyperlinks_html(text)[1]).to eq(["https://www.tm-town.com"])
     end
   end
 
@@ -272,25 +272,25 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     it 'redacts all confidential information from a text #001' do
       tokens = ['Coca-Cola', 'Pepsi']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000. Find out more at https://www.merger.com or contact john@merger.com.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: '*****', hyperlink_text: '*****', email_text: '*****', date_text: '*****', token_text: '*****').redact_html).to eq("Coca-Cola announced a merger with Pepsi that will happen on on <span class='confidentialDate'>*****</span> for <span class='confidentialNumber'>*****</span>. Find out more at <span class='confidentialHyperlinks'>*****</span> or contact <span class='confidentialEmail'>*****</span>.")
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: '*****', hyperlink_text: '*****', email_text: '*****', date_text: '*****', token_text: '*****').redact_html(text)).to eq("Coca-Cola announced a merger with Pepsi that will happen on on <span class='confidentialDate'>*****</span> for <span class='confidentialNumber'>*****</span>. Find out more at <span class='confidentialHyperlinks'>*****</span> or contact <span class='confidentialEmail'>*****</span>.")
     end
 
     it 'redacts all confidential information from a text #002' do
       tokens = ['Coca-Cola', 'Pepsi']
       text = 'Coca-Cola announced a merger with Pepsi that will happen on on December 15th, 2020 for $200,000,000,000. Find out more at https://www.merger.com or contact john@merger.com.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact).to eq("***** announced a merger with ***** that will happen on on **date** for **number**. Find out more at **url** or contact **email**.")
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact(text)).to eq("***** announced a merger with ***** that will happen on on **date** for **number**. Find out more at **url** or contact **email**.")
     end
 
     it 'redacts all confidential information from a text #003' do
       tokens = ['CLA']
       text = 'LEGAL DISCLAIMER - CLA will not be held reponsible for changes.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact).to eq("LEGAL DISCLAIMER - ***** will not be held reponsible for changes.")
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact(text)).to eq("LEGAL DISCLAIMER - ***** will not be held reponsible for changes.")
     end
 
     it 'redacts all confidential information from a text #004' do
       tokens = []
       text = '1984 was a good year.'
-      expect(described_class.new(text: text, language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact_html).to eq("<span class='confidentialNumber'>**number**</span> was a good year.")
+      expect(described_class.new(language: 'en', tokens: tokens, dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, email_text: '**email**', number_text: '**number**', date_text: '**date**', hyperlink_text: '**url**', token_text: '*****').redact_html(text)).to eq("<span class='confidentialNumber'>**number**</span> was a good year.")
     end
   end
 end

@@ -9,9 +9,8 @@ module ConfidentialInfoRedactorLite
     # Rubular: http://rubular.com/r/mxcj2G0Jfa
     EMAIL_REGEX = /(?<=\A|\s|\()[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+(?=\z|\s|\.|\))/i
 
-    attr_reader :text, :language, :email_text, :hyperlink_text, :number_text, :date_text, :token_text, :tokens, :ignore_emails, :ignore_dates, :ignore_numbers, :ignore_hyperlinks, :dow, :dow_abbr, :months, :months_abbr
-    def initialize(text:, dow:, dow_abbr:, months:, months_abbr:, **args)
-      @text = text
+    attr_reader :language, :email_text, :hyperlink_text, :number_text, :date_text, :token_text, :tokens, :ignore_emails, :ignore_dates, :ignore_numbers, :ignore_hyperlinks, :dow, :dow_abbr, :months, :months_abbr
+    def initialize(dow:, dow_abbr:, months:, months_abbr:, **args)
       @language = args[:language] || 'en'
       @tokens = args[:tokens]
       @number_text = args[:number_text] || '<redacted number>'
@@ -29,52 +28,52 @@ module ConfidentialInfoRedactorLite
       @months_abbr = months_abbr
     end
 
-    def dates
+    def dates(text)
       return '' if text.nil?
       redact_dates(text)
     end
 
-    def dates_html
+    def dates_html(text)
       return [] if text.nil?
       redact_dates_html(text)
     end
 
-    def numbers
+    def numbers(text)
       return '' if text.nil?
       redact_numbers(text)
     end
 
-    def numbers_html
+    def numbers_html(text)
       return [] if text.nil?
       redact_numbers_html(text)
     end
 
-    def emails
+    def emails(text)
       return '' if text.nil?
       redact_emails(text)
     end
 
-    def emails_html
+    def emails_html(text)
       return [] if text.nil?
       redact_emails_html(text)
     end
 
-    def hyperlinks
+    def hyperlinks(text)
       return '' if text.nil?
       redact_hyperlinks(text)
     end
 
-    def hyperlinks_html
+    def hyperlinks_html(text)
       return [] if text.nil?
       redact_hyperlinks_html(text)
     end
 
-    def proper_nouns
+    def proper_nouns(text)
       return '' if text.nil?
       redact_tokens(text)
     end
 
-    def redact
+    def redact(text)
       return '' if text.nil?
       if ignore_emails
         redacted_text = text
@@ -87,7 +86,7 @@ module ConfidentialInfoRedactorLite
       redact_tokens(redacted_text)
     end
 
-    def redact_html
+    def redact_html(text)
       return [] if text.nil?
       redacted_text = redact_dates_html(text)[0]
       redacted_text = redact_emails_html(redacted_text)[0]
@@ -183,11 +182,11 @@ module ConfidentialInfoRedactorLite
     end
 
     def redact_hyperlinks(txt)
-      ConfidentialInfoRedactorLite::Hyperlink.new(string: txt).replace.gsub(/<redacted hyperlink>/, "#{hyperlink_text}").gsub(/\s*#{Regexp.escape(hyperlink_text)}\s*/, " #{hyperlink_text} ").gsub(/#{Regexp.escape(hyperlink_text)}\s{1}\.{1}/, "#{hyperlink_text}.").gsub(/#{Regexp.escape(hyperlink_text)}\s{1}\,{1}/, "#{hyperlink_text},")
+      ConfidentialInfoRedactorLite::Hyperlink.new.replace(txt).gsub(/<redacted hyperlink>/, "#{hyperlink_text}").gsub(/\s*#{Regexp.escape(hyperlink_text)}\s*/, " #{hyperlink_text} ").gsub(/#{Regexp.escape(hyperlink_text)}\s{1}\.{1}/, "#{hyperlink_text}.").gsub(/#{Regexp.escape(hyperlink_text)}\s{1}\,{1}/, "#{hyperlink_text},")
     end
 
     def redact_dates(txt)
-      ConfidentialInfoRedactorLite::Date.new(string: txt, dow: dow, dow_abbr: dow_abbr, months: months, months_abbr: months_abbr).replace.gsub(/<redacted date>/, "#{date_text}").gsub(/\s*#{Regexp.escape(date_text)}\s*/, " #{date_text} ").gsub(/\A\s*#{Regexp.escape(date_text)}\s*/, "#{date_text} ").gsub(/#{Regexp.escape(date_text)}\s{1}\.{1}/, "#{date_text}.")
+      ConfidentialInfoRedactorLite::Date.new(dow: dow, dow_abbr: dow_abbr, months: months, months_abbr: months_abbr).replace(txt).gsub(/<redacted date>/, "#{date_text}").gsub(/\s*#{Regexp.escape(date_text)}\s*/, " #{date_text} ").gsub(/\A\s*#{Regexp.escape(date_text)}\s*/, "#{date_text} ").gsub(/#{Regexp.escape(date_text)}\s{1}\.{1}/, "#{date_text}.")
     end
 
     def redact_numbers(txt)
