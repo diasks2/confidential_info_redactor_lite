@@ -48,16 +48,20 @@ module ConfidentialInfoRedactorLite
       true
     end
 
+    def matching_first_token?(tokens)
+      corpus.include?(tokens[0]) &&
+      tokens[0] != 'the' &&
+      tokens[0] != 'deutsche' &&
+      tokens.length.eql?(2)
+    end
+
     def search_ngrams(tokens, extracted_terms)
       tokens.each do |ngram|
         ngram.split(PUNCTUATION_REGEX).each do |t|
           next if !(t !~ /.*\d+.*/)
           cleaned_token_downcased = clean_token(t.downcase)
           cleaned_token = clean_token(t)
-          if corpus.include?(cleaned_token_downcased.split(' ')[0]) &&
-             cleaned_token_downcased.split(' ')[0] != 'the' &&
-             cleaned_token_downcased.split(' ')[0] != 'deutsche' &&
-             cleaned_token_downcased.split(' ').length.eql?(2)
+          if matching_first_token?(cleaned_token_downcased.split(' '))
             extracted_terms << cleaned_token.split(' ')[1] unless corpus.include?(cleaned_token_downcased.split(' ')[1])
           else
             extracted_terms << cleaned_token unless non_confidential_token?(cleaned_token_downcased, includes_confidential?(cleaned_token))
