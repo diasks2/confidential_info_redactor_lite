@@ -18,7 +18,7 @@ module ConfidentialInfoRedactorLite
         next if initial_extracted_terms.length.eql?(segment.split(' ').length) && !in_corpus?(initial_extracted_terms)
         search_ngrams(initial_extracted_terms, extracted_terms)
       end
-      extracted_terms.uniq.reject(&:empty?)
+      extracted_terms.map { |t| t.gsub(/\{\}/, '') }.uniq.reject(&:empty?)
     end
 
     private
