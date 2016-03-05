@@ -118,6 +118,21 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = "1.4,5.3,7.3"
       expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers_html(text)[1]).to eq(["1.4,5.3,7.3"])
     end
+
+    it 'redacts numbers from a text #011' do
+      text = "machine width – 3900mm (overall), 3500mm (cross members)"
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers_html(text)[1]).to eq(["3900mm", "3500mm"])
+    end
+
+    it 'redacts numbers from a text #012' do
+      text = "Maximale Maschinenbreite – 3.900 mm (Gesamtlänge), 3.500 mm (Traversen)"
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers_html(text)[1]).to eq(["3.900", "3.500"])
+    end
+
+    it 'redacts numbers from a text #013' do
+      text = "Page 4"
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers_html(text)[1]).to eq(["4"])
+    end
   end
 
   describe '#numbers_html' do
@@ -129,6 +144,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
     it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #002' do
       text = 'プロのミニチュアゴルファー２人のサイン。２人の出身国は別であること。（４５ポイント；それぞれが別の大陸出身だった場合、５ボーナスポイント。）'
       expect(described_class.new(language: 'ja', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html(text)).to eq(["プロのミニチュアゴルファー <span class='confidentialNumber'>*****</span> 人のサイン。 <span class='confidentialNumber'>*****</span> 人の出身国は別であること。（ <span class='confidentialNumber'>*****</span> ポイント；それぞれが別の大陸出身だった場合、 <span class='confidentialNumber'>*****</span> ボーナスポイント。）", ["２", "２", "４５", "５"]])
+    end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #003' do
+      text = "machine width – 3900mm (overall), 3500mm (cross members)"
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html(text)).to eq(["machine width – <span class='confidentialNumber'>*****</span> (overall), <span class='confidentialNumber'>*****</span> (cross members)", ["3900mm", "3500mm"]])
     end
   end
 
