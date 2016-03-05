@@ -5,7 +5,7 @@ module ConfidentialInfoRedactorLite
   # This class redacts various tokens from a text
   class Redactor
     # Rubular: http://rubular.com/r/OI2wQZ0KSl
-    NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.)*\d)*(\D?\s|\s|\.?\s|\.$)|(?<=\s|\s\()[^(]?\d+((,|\.)*\d)*(?=(\D?\s|\s|\.?\s|\.$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)|(?<=\()\S{1}\d+(?=\))|(?<=\s{1})\S{1}\d+\z|^\d+$/
+    NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.)*\d)*(\D?\s|\s|\.?\s|\.$)|(?<=\s|\s\(|\s'|\s‘)[^('‘]?\d+((,|\.)*\d)*(?=(\D?\s|\s|\.?\s|\.$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)|(?<=\()\S{1}\d+(?=\))|(?<=\s{1})\S{1}\d+\z|^\d+$/
     # Rubular: http://rubular.com/r/mxcj2G0Jfa
     EMAIL_REGEX = /(?<=\A|\s|\()[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+(?=\z|\s|\.|\))/i
 
@@ -117,7 +117,13 @@ module ConfidentialInfoRedactorLite
         original_sentence_array = txt.split(' ')
         redacted_sentence_array = redacted_text.split(' ')
         diff = original_sentence_array - redacted_sentence_array
-        final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }.map { |token| token[-1].eql?(')') ? token[0...-1] : token }.map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+        final_number_tokens = diff.map { |token| token[-1].eql?('.') ? token[0...-1] : token }
+                                  .map { |token| token[-1].eql?(')') ? token[0...-1] : token }
+                                  .map { |token| token[-1].eql?("'") ? token[0...-1] : token }
+                                  .map { |token| token[-1].eql?('’') ? token[0...-1] : token }
+                                  .map { |token| token[0].eql?('(') ? token[1..token.length] : token }
+                                  .map { |token| token[0].eql?("'") ? token[1..token.length] : token }
+                                  .map { |token| token[0].eql?("‘") ? token[1..token.length] : token }
       end
       [redacted_text.gsub(/(?<=[^\>]|\A)#{Regexp.escape(number_text)}/, "<span class='confidentialNumber'>#{number_text}</span>"), final_number_tokens]
     end

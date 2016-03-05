@@ -103,6 +103,16 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = '100'
       expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers(text)).to eq('<redacted number>')
     end
+
+    it 'redacts numbers from a text #008' do
+      text = "Test '0' hello."
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers_html(text)[1]).to eq(["0"])
+    end
+
+    it 'redacts numbers from a text #009' do
+      text = "Test ‘0’ hello."
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr).numbers_html(text)[1]).to eq(["0"])
+    end
   end
 
   describe '#numbers_html' do
