@@ -3,8 +3,8 @@ module ConfidentialInfoRedactorLite
     # Rubular: http://rubular.com/r/73CZ2HU0q6
     DMY_MDY_REGEX = /(\d{1,2}(\/|\.|-)){2}\d{4}/
 
-    # Rubular: http://rubular.com/r/GWbuWXw4t0
-    YMD_YDM_REGEX = /\d{4}(\/|\.|-)(\d{1,2}(\/|\.|-)){2}/
+    # Rubular: http://rubular.com/r/wFI7dRLK3k
+    YMD_YDM_REGEX = /(?<=\A|\s)\d{4}(\/|\.|-)(\d{1,2}(\/|\.|-)){2}/
 
     # Rubular: http://rubular.com/r/SRZ27XNlvR
     DIGIT_ONLY_YEAR_FIRST_REGEX = /[12]\d{7}\D/
@@ -43,9 +43,9 @@ module ConfidentialInfoRedactorLite
 
     def replace_number_only_date(text)
       text.gsub(DMY_MDY_REGEX, ' <redacted date> ')
-            .gsub(YMD_YDM_REGEX, ' <redacted date> ')
-            .gsub(DIGIT_ONLY_YEAR_FIRST_REGEX, ' <redacted date> ')
-            .gsub(DIGIT_ONLY_YEAR_LAST_REGEX, ' <redacted date> ')
+          .gsub(YMD_YDM_REGEX, ' <redacted date> ')
+          .gsub(DIGIT_ONLY_YEAR_FIRST_REGEX, ' <redacted date> ')
+          .gsub(DIGIT_ONLY_YEAR_LAST_REGEX, ' <redacted date> ')
     end
 
     private

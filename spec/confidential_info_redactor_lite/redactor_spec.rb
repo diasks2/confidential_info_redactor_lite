@@ -76,6 +76,16 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = '18/01/2013'
       expect(described_class.new(language: 'de', dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr, date_text: "*****").dates_html(text)[1]).to eq(['18/01/2013'])
     end
+
+    it 'surrounds the redacted dates in spans and return the redacted dates from a text #004' do
+      text = '16/01/2013'
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html(text)[1]).to eq(["16/01/2013"])
+    end
+
+    it 'surrounds the redacted dates in spans and return the redacted dates from a text #005' do
+      text = '88966-5.0-ENG'
+      expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, date_text: "*****").dates_html(text)[1]).to eq([])
+    end
   end
 
   describe '#numbers' do

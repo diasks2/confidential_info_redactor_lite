@@ -238,6 +238,12 @@ RSpec.describe ConfidentialInfoRedactorLite::Date do
       ws = ConfidentialInfoRedactorLite::Date.new(dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr)
       expect(ws.includes_date?(text)).to eq(false)
     end
+
+    it 'returns false if the text does not include a date #037' do
+      text = '88966-5.0-ENG'
+      ws = ConfidentialInfoRedactorLite::Date.new(dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr)
+      expect(ws.includes_date?(text)).to eq(false)
+    end
   end
 
   context '#occurences' do
