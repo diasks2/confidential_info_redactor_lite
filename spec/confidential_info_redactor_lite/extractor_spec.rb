@@ -154,6 +154,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Extractor do
         text = 'Westin{}'
         expect(described_class.new(corpus: corpus, language: 'en').extract(text)).to eq(["Westin"])
       end
+
+      it 'extracts the proper nouns from a text #020' do
+        text = 'Document No:-'
+        expect(described_class.new(corpus: corpus, language: 'en').extract(text)).to eq(["Document No"])
+      end
     end
 
     context 'German (de)' do
