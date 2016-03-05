@@ -40,7 +40,8 @@ module ConfidentialInfoRedactorLite
     end
 
     def singular_in_corpus?(token)
-      corpus.include?(token[0...-1]) && token[-1].eql?('s')
+      corpus.include?(token[0...-1]) &&
+        token[-1].eql?('s')
     end
 
     def includes_confidential?(token)
