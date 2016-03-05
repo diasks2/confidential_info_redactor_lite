@@ -153,6 +153,7 @@ module ConfidentialInfoRedactorLite
         redacted_text.split(' ').each_with_index do |redacted_token, index|
           if redacted_token.gsub(/\./, '') == date_text
             original_sentence_array.each_with_index do |original_token, i|
+              date_tokens << original_token if original_sentence_array.length == 1
               if redacted_sentence_array[index - 1] == original_token &&
                 diff.include?(original_sentence_array[i + 1]) &&
                 original_sentence_array[i + 2] == redacted_sentence_array[index + 1]
@@ -192,7 +193,7 @@ module ConfidentialInfoRedactorLite
     end
 
     def redact_dates(txt)
-      ConfidentialInfoRedactorLite::Date.new(dow: dow, dow_abbr: dow_abbr, months: months, months_abbr: months_abbr).replace(txt).gsub(/<redacted date>/, "#{date_text}").gsub(/\s*#{Regexp.escape(date_text)}\s*/, " #{date_text} ").gsub(/\A\s*#{Regexp.escape(date_text)}\s*/, "#{date_text} ").gsub(/#{Regexp.escape(date_text)}\s{1}\.{1}/, "#{date_text}.")
+      ConfidentialInfoRedactorLite::Date.new(dow: dow, dow_abbr: dow_abbr, months: months, months_abbr: months_abbr).replace(txt).gsub(/<redacted date>/, "#{date_text}").gsub(/\s*#{Regexp.escape(date_text)}\s*/, " #{date_text} ").gsub(/\A\s*#{Regexp.escape(date_text)}\s*/, "#{date_text} ").gsub(/#{Regexp.escape(date_text)}\s{1}\.{1}/, "#{date_text}.").strip
     end
 
     def redact_numbers(txt)
