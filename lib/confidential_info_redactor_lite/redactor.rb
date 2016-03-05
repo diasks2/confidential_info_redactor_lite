@@ -5,7 +5,7 @@ module ConfidentialInfoRedactorLite
   # This class redacts various tokens from a text
   class Redactor
     # Rubular: http://rubular.com/r/OI2wQZ0KSl
-    NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.)*\d)*(\D?\s|\s|\.?\s|\.$)|(?<=\s|\s\(|\s'|\s‘)[^('‘]?\d+((,|\.)*\d)*(?=(\D?\s|\s|\.?\s|\.$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)|(?<=\()\S{1}\d+(?=\))|(?<=\s{1})\S{1}\d+\z|^\d+$/
+    NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.)*\d)*(\D?\s|\s|\.?\s|\.$|$)|(?<=\s|\s\(|\s'|\s‘)[^('‘]?\d+((,|\.)*\d)*(?=(\D?\s|\s|\.?\s|\.$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)|(?<=\()\S{1}\d+(?=\))|(?<=\s{1})\S{1}\d+\z|^\d+$/
     # Rubular: http://rubular.com/r/mxcj2G0Jfa
     EMAIL_REGEX = /(?<=\A|\s|\()[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+(?=\z|\s|\.|\))/i
 
