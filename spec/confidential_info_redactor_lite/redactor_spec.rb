@@ -179,6 +179,31 @@ RSpec.describe ConfidentialInfoRedactorLite::Redactor do
       text = "Page 1500"
       expect(described_class.new(language: 'en', dow: en_dow, dow_abbr: en_dow_abbr, months: en_months, months_abbr: en_month_abbr, number_text: "*****").numbers_html(text)[1]).to eq(["1500"])
     end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #005' do
+      text = "Maximale Maschinenbreite – 3.900 mm (Gesamtlänge), 3.500 mm (Traversen)"
+      expect(described_class.new(language: 'de', dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr, number_text: "*****").numbers_html(text)[1]).to eq(["3.900", "3.500"])
+    end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #006' do
+      text = "Maschinenlänge – 1.225 mm"
+      expect(described_class.new(language: 'de', dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr, number_text: "*****").numbers_html(text)[1]).to eq(["1.225"])
+    end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #007' do
+      text = "600 V 60 Hz 3 Ph zzgl. Erdung"
+      expect(described_class.new(language: 'de', dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr, number_text: "*****").numbers_html(text)[1]).to eq(["600", "60", "3"])
+    end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #008' do
+      text = "380/415V 50/60Hz 3Ph plus neutral plus earth"
+      expect(described_class.new(language: 'de', dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr, number_text: "*****").numbers_html(text)[1]).to eq(["380/415V", "50/60Hz", "3Ph"])
+    end
+
+    it 'surrounds the redacted numbers in spans and return the redacted numbers from a text #009' do
+      text = "380/415 V 50/60 Hz 3Ph zzgl. neutral zzgl. Erdung"
+      expect(described_class.new(language: 'de', dow: de_dow, dow_abbr: de_dow_abbr, months: de_months, months_abbr: de_month_abbr, number_text: "*****").numbers_html(text)[1]).to eq(["380/415V", "50/60Hz", "3Ph"])
+    end
   end
 
   describe '#emails' do
