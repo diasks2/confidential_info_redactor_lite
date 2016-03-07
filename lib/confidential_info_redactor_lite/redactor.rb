@@ -5,7 +5,7 @@ module ConfidentialInfoRedactorLite
   # This class redacts various tokens from a text
   class Redactor
     # Rubular: http://rubular.com/r/OI2wQZ0KSl
-    NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.|\/)*\d)*(\D?\s|\s|[[:cntrl:]]|[[:space:]]|\.?\s|\.$|$)|(?<=[[:cntrl:]]|[[:space:]]|\s|\s\(|\s'|\s‘)[^('‘]?\d+((,|\.|\/)*\d)*\"*(?=(\D?\s|\s|[[:cntrl:]]|[[:space:]]|\.?\s|\.$|$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)|(?<=\()\S{1}\d+(?=\))|(?<=\s{1})\S{1}\d+\z|^\d+$|(?<=\A|\A\(|\s|[[:cntrl:]]|[[:space:]]|\s\()[^(]?\d+((,|\.|\/)*\d)*\D{2}(?=($|\s+))|\d+/
+    NUMBER_REGEX = /(?<=\A|\A\()[^(]?\d+((,|\.|\/)*\d)*(\D?\s|\s|[[:cntrl:]]|[[:space:]]|\.?\s|\.$|$)|(?<=[[:cntrl:]]|[[:space:]]|\s|\s\(|\s'|\s‘)[^('‘]?\d+((,|\.|\/)*\d)*\"*(?=(\D?\s|\s|[[:cntrl:]]|[[:space:]]|\.?\s|\.$|$))|(?<=\s)\d+(nd|th|st)|(?<=\s)\d+\/\d+\"*(?=\s)|(?<=\()\S{1}\d+(?=\))|(?<=\s{1})\S{1}\d+\z|^\d+$|(?<=\A|\A\(|\s|[[:cntrl:]]|[[:space:]]|\s\()[^(]?\d+((,|\.|\/)*\d)*\D{2}(?=($|\s+))|(?<=\A|[[:cntrl:]]|[[:space:]]|\s|\A\(|\s\()[^\(\s]*\d+[^\.\s\)]*(?=\z|$|\s|\.$|\.\s|\))/
     # Rubular: http://rubular.com/r/mxcj2G0Jfa
     EMAIL_REGEX = /(?<=\A|\s|\()[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+(?=\z|\s|\.|\))/i
 
