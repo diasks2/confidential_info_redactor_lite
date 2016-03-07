@@ -15,7 +15,6 @@ module ConfidentialInfoRedactorLite
       extracted_terms = []
       PragmaticSegmenter::Segmenter.new(text: text.gsub(/[’‘]/, "'"), language: language).segment.each do |segment|
         initial_extracted_terms = extract_preliminary_terms(segment)
-        next if initial_extracted_terms.length.eql?(segment.split(' ').length) && !in_corpus?(initial_extracted_terms)
         search_ngrams(initial_extracted_terms, extracted_terms)
       end
       extracted_terms.map { |t| t.gsub(/\{\}/, '') }.delete_if { |t| t.length == 1 }.uniq.reject(&:empty?)
@@ -27,21 +26,21 @@ module ConfidentialInfoRedactorLite
       segment.gsub(EXTRACT_REGEX).map { |match| match unless corpus.include?(match.downcase.gsub(PUNCTUATION_REGEX, '').gsub(/\'$/, '')) }.compact
     end
 
-    def in_corpus?(tokens)
-      tokens.map { |token| token.split(PUNCTUATION_REGEX).map { |t| return true if corpus.include?(clean_token(t.downcase)) } }
-    end
-
     def clean_token(token)
       token.gsub(PUNCTUATION_REGEX, '').gsub(/\'$/, '').gsub(/\.\z/, '').strip
     end
 
     def non_confidential_token?(token, includes_confidential)
-      corpus.include?(token) || !includes_confidential || singular_in_corpus?(token)
+      corpus.include?(token) || !includes_confidential || stem_in_corpus?(token)
     end
 
-    def singular_in_corpus?(token)
+    def stem_in_corpus?(token)
       corpus.include?(token[0...-1]) &&
-        token[-1].eql?('s')
+        token[-1].eql?('s') ||
+        corpus.include?(token[0...-2]) && token[-2..-1].eql?('en') ||
+        corpus.include?(token[0...-2]) && token[-2..-1].eql?('es') ||
+        corpus.include?(token[0...-2]) && token[-2..-1].eql?('er') ||
+        corpus.include?(token[0...-1]) && token[-1].eql?('n')
     end
 
     def includes_confidential?(token)

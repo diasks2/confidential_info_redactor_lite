@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe ConfidentialInfoRedactorLite::Extractor do
-  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'viele', 'mitarbeiter', 'arbeitsstelle', 'some', 'there', 'king', 'by', "don't", 'dec', 'at', 'dot', 'and', 'project', 'activity', 'complete', 'prizes', 'build', 'video', 'many', 'autographs', 'picture', 'the', 'each', 'submit', 'to', 'then', 'coming', 'screenshot', 'putter', 'king', 'miniature', 'good', 'bad', 'vs.', 'carbs', 'all', 'natural', 'peanut', 'butter', 'world', 'heritage', 'site', 'gift', 'card', 'engraved', 'crystal', 'trophy', 'reducing'] }
+  let(:corpus) { ['i', 'in', 'you', 'top', 'so', 'are', 'december', 'please', 'viele', 'mitarbeiter', 'arbeitsstelle', 'some', 'there', 'king', 'by', "don't", 'dec', 'at', 'dot', 'and', 'project', 'activity', 'complete', 'prizes', 'build', 'video', 'many', 'autographs', 'picture', 'the', 'each', 'submit', 'to', 'then', 'coming', 'screenshot', 'putter', 'king', 'miniature', 'good', 'bad', 'vs.', 'carbs', 'all', 'natural', 'peanut', 'butter', 'world', 'heritage', 'site', 'gift', 'card', 'engraved', 'crystal', 'trophy', 'reducing', 'ich', 'routine', 'studium', 'uni', 'tag', 'mahlzeit'] }
   describe '#extract' do
     context 'English (en)' do
       it 'extracts the proper nouns from a text #001' do
@@ -195,6 +195,11 @@ RSpec.describe ConfidentialInfoRedactorLite::Extractor do
       it 'extracts the proper nouns from a text #007' do
         text = 'Viele de Mitarbeiters der “Deutsche Bank” suchen eine andere Arbeitsstelle.'
         expect(described_class.new(corpus: corpus, language: 'de').extract(text)).to eq(['Deutsche Bank'])
+      end
+
+      it 'extracts the proper nouns from a text #008' do
+        text = 'Ich behielt diese Routine während und sogar während des Studiums an der Uni bei, und ich war damals froh, wenn ich pro Tag zwei ganze Mahlzeiten zu mir nahm.'
+        expect(described_class.new(corpus: corpus, language: 'de').extract(text)).to eq([])
       end
     end
   end
